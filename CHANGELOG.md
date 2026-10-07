@@ -22,6 +22,12 @@ Callers pin commit SHAs; each entry names what changed for them.
 
 ### Changed
 
+- The vendored page kit is RBA Web Site's `software-kit/` at `0060426` (17
+  files, verified against Web Site's manifest): the footer gains X and
+  GitHub links with inline SVG icons (`assets/social.html`, inlined by
+  `render.py`; no inline style or script, so the site's CSP is unchanged).
+  The real-kit test now checks both links and that the pages link to no
+  other external site.
 - The pinned Rusty Wave key is RW's export at `rusty-media-player@6829e49`:
   the same primary (`E13FF843…3CEE`) and signing subkey (`2FD18486…9B84`),
   with the expiry removed from both (the user's no-expiry rule). It is

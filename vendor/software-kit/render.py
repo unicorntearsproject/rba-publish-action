@@ -117,7 +117,7 @@ def write_assets(out):
         urls[os.path.basename(rel)] = f"/_kit/{target}"
 
     for rel in sorted(os.listdir(ASSETS)):
-        if not rel.endswith(".css"):
+        if not rel.endswith((".css", ".html")):  # .html partials are inlined, not served
             with open(os.path.join(ASSETS, rel), "rb") as fh:
                 put(rel, fh.read())
     css = ""
@@ -254,13 +254,16 @@ def page(title, description, body, urls, canonical):
 {body}</main>
 <footer>
   <hr class="divider">
-  <p>© 2026 Unicorn Tears Project (UTP).</p>
+{SOCIAL}  <p>© 2026 Unicorn Tears Project (UTP).</p>
   <p>“Rusty Bucket”, “Rusty”, “Rusty Wave” and the logo are trademarks of UTP.</p>
 </footer>
 </body>
 </html>
 """
 
+
+with open(os.path.join(ASSETS, "social.html"), encoding="utf-8") as _fh:
+    SOCIAL = _fh.read()   # X and GitHub links with inline icons, shared with rustybucket.ai
 
 INTRO = ("Every download, for every platform. Each file is signed and listed "
          "with its SHA-256, and older versions stay here.")

@@ -285,6 +285,17 @@ if (export FAKE_S3_DIR=$real PATH="$ROOT/tests/fake-aws:$PATH" PRODUCTS=$work/pr
      && ! grep -lq -e '<style' -e '<script' -e ' style=' "$real/index.html" "$real/rusty-wave/index.html"; then
     ok "real kit: pages, fingerprinted assets, folder pages on its CSS, no inline style or script"
   else nok "real kit render"; (cd "$real" && find . -type f | sort | sed -n "1,30p"); fi
+  # The footer's social links (RBA Web Site's social.html): both present, and
+  # every external link on the rendered pages is on this list, nothing else.
+  if grep -q 'href="https://x.com/djunicorntears"' "$real/index.html" \
+     && grep -q 'href="https://github.com/unicorntearsproject"' "$real/index.html"; then
+    ok "real kit: the X and GitHub links are in the footer"
+  else nok "real kit: social links missing"; fi
+  others=$(grep -rhoE 'href="https?://[^"]+"' "$real" --include=index.html | sort -u \
+    | grep -vE '^href="https://(software\.rustybucket\.ai|rustybucket\.ai|wave\.rustybucket\.ai)(/[^"]*)?"$' \
+    | grep -vxE 'href="https://x\.com/djunicorntears"|href="https://github\.com/unicorntearsproject"' || true)
+  if [[ -z $others ]]; then ok "real kit: no external links beyond our sites, X and GitHub"
+  else nok "real kit: unexpected external links"; echo "$others"; fi
 else nok "real kit render_site failed"; cat "$work/out"; fi
 
 # 18. With every record present, the render-index dry run passes, plans the
