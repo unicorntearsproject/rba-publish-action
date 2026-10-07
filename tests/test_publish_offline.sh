@@ -596,5 +596,41 @@ if awk '/^# --- 10\. Notify downstream/ { n = NR } /verification FAILED \(see ab
   ok "verification failure: notify first, then fail the run"
 else nok "verification failure: the run stops before notifying"; fi
 
+# 25. The REAL pinned key against a REAL Rusty Wave signature: rc5's
+# SHA256SUMS (signed by the release subkey; tests/fixtures/), checked by
+# publish-release.sh's own verify_sig. Catches a pinned key that no longer
+# verifies RW's releases (a wrong export, a lost subkey or cross-signature).
+real_home=$work/real-key
+mkdir -m 700 "$real_home"
+KEY_REAL=$(jq -r .key_file "$ROOT/scripts/products/rusty-wave.json")
+FPR_REAL=$(jq -r .key_fingerprint "$ROOT/scripts/products/rusty-wave.json")
+GNUPGHOME=$real_home gpg --batch --quiet --import "$ROOT/$KEY_REAL" 2>/dev/null
+real_verify() { # file: verify_sig from publish-release.sh with the pinned key
+  GNUPGHOME=$real_home KEY_FPR=$FPR_REAL bash -c '
+    die() { echo "die: $*"; exit 1; }
+    source <(sed -n "/^verify_sig() {/,/^}/p" "$1")
+    verify_sig "$2" && echo verified' _ "$ROOT/scripts/publish-release.sh" "$1" >"$work/out" 2>&1
+}
+if real_verify "$ROOT/tests/fixtures/rusty-wave-1.0.0-rc5-SHA256SUMS" && grep -qx verified "$work/out"; then
+  ok "pinned key: verifies a real Rusty Wave release signature (rc5 SHA256SUMS, subkey)"
+else nok "pinned key: rc5's real signature refused"; cat "$work/out"; fi
+cp "$ROOT/tests/fixtures/rusty-wave-1.0.0-rc5-SHA256SUMS" "$work/rc5-tampered"
+cp "$ROOT/tests/fixtures/rusty-wave-1.0.0-rc5-SHA256SUMS.asc" "$work/rc5-tampered.asc"
+printf 'x' >>"$work/rc5-tampered"
+if real_verify "$work/rc5-tampered"; then nok "pinned key: a tampered real file accepted"; else
+  expect 'no good signature' "pinned key: the same file, tampered, is refused"
+fi
+# The pinned key carries no expiry (the user's no-expiry rule), on the
+# primary or any subkey.
+if GNUPGHOME=$real_home gpg --with-colons -k "$FPR_REAL" | awk -F: '($1 == "pub" || $1 == "sub") && $7 != "" { bad = 1 } END { exit bad }'; then
+  ok "pinned key: no expiry on the primary or any subkey"
+else nok "pinned key: has an expiry date"; fi
+# The published name carries the key file's hash (write-once, a new name per key).
+want=$(sha256sum "$ROOT/$KEY_REAL" | cut -c1-8)
+if [[ $(jq -r .key_url_path "$ROOT/scripts/products/rusty-wave.json") == *"-$want.asc" ]]; then
+  ok "pinned key: published name ends in its sha256 prefix ($want)"
+else nok "pinned key: key_url_path doesn't match the key file"; fi
+GNUPGHOME=$real_home gpgconf --kill all >/dev/null 2>&1 || true
+
 echo "publish offline: $pass passed, $failed failed"
 ((failed == 0))
