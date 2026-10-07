@@ -76,7 +76,7 @@ jobs:
 ## Develop
 
 ```bash
-tests/test_publish_offline.sh                              # the scripts, offline (fake aws and gh)
+tests/test_publish_offline.sh                              # the scripts, offline (fake aws, gh and curl)
 python3 -m unittest discover -s tests -p 'test_*.py'       # release checks and catalog
 tests/scan_repo.sh                                         # nothing identifying or secret in the repo
 ```

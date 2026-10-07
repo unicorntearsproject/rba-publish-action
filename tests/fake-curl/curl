@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Test stand-in for curl (tests/test_publish_offline.sh, test 23): answers
+# the live-manifest fetch the way S3 or CloudFront would.
+#   FAKE_CURL  s3-403 | s3-404 | waf-403 | ok | 503 | timeout
+#   FAKE_CURL_BODY  the body for "ok" (a manifest)
+set -euo pipefail
+out=/dev/null hdr=/dev/null fmt=""
+while (($#)); do
+  case $1 in
+    -o) out=$2; shift ;;
+    -D) hdr=$2; shift ;;
+    -w) fmt=$2; shift ;;
+    --connect-timeout|--max-time) shift ;;
+  esac
+  shift
+done
+respond() { # code server content-type body
+  printf 'HTTP/2 %s\r\nserver: %s\r\ncontent-type: %s\r\n\r\n' "$1" "$2" "$3" >"$hdr"
+  printf '%s' "$4" >"$out"
+  [[ $fmt == *http_code* ]] && printf '%s' "$1"
+  return 0
+}
+case ${FAKE_CURL:?} in
+  s3-403) respond 403 AmazonS3 application/xml '<?xml version="1.0" encoding="UTF-8"?>
+<Error><Code>AccessDenied</Code><Message>Access Denied</Message></Error>' ;;
+  s3-404) respond 404 AmazonS3 application/xml '<Error><Code>NoSuchKey</Code></Error>' ;;
+  waf-403) respond 403 CloudFront text/html '<html><body><h1>403 ERROR</h1>Request blocked.</body></html>' ;;
+  ok) respond 200 AmazonS3 application/json "$(cat "${FAKE_CURL_BODY:?}")" ;;
+  503) respond 503 CloudFront text/html '<html>503 Service Unavailable</html>' ;;
+  timeout) echo "curl: (28) Operation timed out after 120000 milliseconds" >&2; exit 28 ;;
+esac

@@ -538,5 +538,34 @@ if grep -rnE 'set -[a-z]*x|xtrace|BASH_XTRACEFD' "$ROOT/scripts" "$ROOT/action.y
   nok "no command tracing in the publish path"; cat "$work/out"
 else ok "no command tracing (set -x) in the publish path"; fi
 
+# 23. The live manifest fetch: only S3's own 403 (AccessDenied XML, server
+# AmazonS3: the key doesn't exist in the private bucket) means "nothing live
+# yet". A CloudFront/WAF 403, a 404, a 5xx or a timeout stops, so the
+# newer-than-live check can never be skipped. Runs the real fetch through a
+# stand-in curl (tests/fake-curl), in preflight (no aws or gh: tripwires).
+live_run() { # mode [body]: preflight of the good 0.0.5 release against that answer
+  : >"$work/tripwire.log"
+  FAKE_CURL=$1 FAKE_CURL_BODY=${2:-} PATH="$work/tripwire:$ROOT/tests/fake-curl:$PATH" \
+    "$ROOT/scripts/publish-release.sh" rusty-wave 0.0.5 "$work/good" --preflight --conf "$work/conf.json" >"$work/out" 2>&1
+}
+if live_run s3-403; then expect 'no live manifest yet (first publish)' "live: S3's AccessDenied 403 = nothing live yet"
+else nok "live: S3's 403 refused"; cat "$work/out"; fi
+if live_run waf-403; then nok "live: a CloudFront/WAF 403 accepted as nothing live"; else
+  expect "answered HTTP 403, but not S3's" "live: a CloudFront/WAF 403 stops the publish"
+fi
+if live_run s3-404; then nok "live: a 404 accepted"; else expect 'answered HTTP 404' "live: a 404 stops the publish"; fi
+if live_run 503; then nok "live: a 503 accepted"; else expect 'answered HTTP 503' "live: a 5xx stops the publish"; fi
+if live_run timeout; then nok "live: a timeout accepted"; else
+  expect "can't fetch the live manifest (network error or timeout)" "live: a timeout stops the publish"
+fi
+echo '{"version": "0.0.4"}' >"$work/live-old.json"
+if live_run ok "$work/live-old.json"; then expect 'checksums and manifest ok: rusty-wave 0.0.5' "live: 200 with an older version: compared, passes"
+else nok "live: newer than an older live refused"; cat "$work/out"; fi
+if live_run ok "$work/live.json"; then nok "live: older than live accepted via the fetch"; else
+  expect 'not newer' "live: 200 with a newer version: refused"
+fi
+if [[ -s $work/tripwire.log ]]; then nok "live: aws or gh called"; cat "$work/tripwire.log"
+else ok "live: no aws or gh calls"; fi
+
 echo "publish offline: $pass passed, $failed failed"
 ((failed == 0))

@@ -5,6 +5,17 @@ Callers pin commit SHAs; each entry names what changed for them.
 
 ## [Unreleased]
 
+### Security
+
+- The live-manifest fetch no longer treats every 403 or 404 as "nothing
+  live yet". Only S3's own 403 for a missing key (`AccessDenied` XML,
+  `server: AmazonS3`) counts. A CloudFront or WAF 403, a 404, a 5xx or a
+  timeout (curl now has connect and total timeouts) stops the publish, so
+  a blocked fetch can't skip the newer-than-live check and move `latest/`
+  backwards. Offline tests (stand-in curl): S3's 403 passes; WAF 403,
+  404, 503 and timeout stop; a live 200 is compared both ways; no `aws`
+  or `gh` calls.
+
 ### Added
 
 - First public version of the publish action and its scripts: release

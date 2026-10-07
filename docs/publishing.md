@@ -56,7 +56,11 @@ Nothing else: no `index.html`, no `-latest` files, no subdirectories.
 
 1. Checks names, every signature (throwaway keyring, pinned fingerprint),
    `SHA256SUMS`, the manifest against the local files and the live
-   manifest (the version must be newer), and the **tag**: `v<version>`
+   manifest (the version must be newer). Only S3's own answer for a
+   missing key (a 403 with its `AccessDenied` XML, `server: AmazonS3`)
+   counts as "nothing live yet". Any other answer stops the publish rather
+   than skip the newer-than-live check: a CloudFront or WAF 403, a 404, a
+   5xx, or a timeout. Then the **tag**: `v<version>`
    must exist in the source repo, and any commit the release names
    (`build-info.json` in the web zip, or a manifest `commit`) must be the
    tag's commit. **Nothing is uploaded until all of this passes.** If
@@ -131,6 +135,7 @@ loudly. Any other version without a record stops the render.
 | "WARN … notifying … FAILED" | Published; the downstream wasn't told | Run the printed retry command |
 | "no release record for …: run scripts/render-index.sh first" | An older version predates release records; nothing was uploaded | Run `render-index`, then publish again |
 | "not newer than the live" | That version (or a newer one) is already live | Nothing; a version is published once |
+| "live manifest answered HTTP …" / "can't fetch the live manifest" | The live manifest couldn't be read reliably (a CDN or WAF block, an error, a timeout); nothing was uploaded | Find out why the site answered that way, then re-run |
 | "already exists with different content" | A published version can't change | Release a new version |
 | After uploads, before the manifest | Versioned files are there, `latest/` unchanged | Re-run the same command: identical files are accepted |
 | Verification FAILED | Published; something didn't check out | Report it to the site's maintainers |

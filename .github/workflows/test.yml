@@ -20,8 +20,8 @@ jobs:
       - name: Scan for anything identifying or secret
         run: tests/scan_repo.sh
       - name: Shellcheck
-        run: shellcheck -x -S warning scripts/*.sh scripts/lib/*.sh tests/*.sh tests/fake-aws/aws tests/fake-gh/gh
+        run: shellcheck -x -S warning scripts/*.sh scripts/lib/*.sh tests/*.sh tests/fake-aws/aws tests/fake-gh/gh tests/fake-curl/curl
       - name: Release checks and catalog (Python)
         run: python3 -m unittest discover -s tests -p 'test_*.py'
-      - name: The scripts, offline (fake aws and gh)
+      - name: The scripts, offline (fake aws, gh and curl)
         run: tests/test_publish_offline.sh

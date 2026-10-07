@@ -130,12 +130,21 @@ if [[ $LIVE == none ]]; then
 elif [[ -n $LIVE ]]; then
   live_args=(--live "$LIVE")
 else
-  code=$(curl -sS -o "$work/live.json" -w '%{http_code}' "$BASE_URL/$PRODUCT/latest/$MANIFEST") \
-    || die "can't fetch the live manifest"
+  # Only S3's own answer for a missing key (the bucket is private, so a 403
+  # with its AccessDenied XML) means "nothing live yet". Anything else (a
+  # CDN or WAF block, a 5xx, a timeout) stops, so the newer-than-live check
+  # is never skipped.
+  code=$(curl -sS --connect-timeout 20 --max-time 120 -D "$work/live.h" -o "$work/live.json" -w '%{http_code}' \
+    "$BASE_URL/$PRODUCT/latest/$MANIFEST") || die "can't fetch the live manifest (network error or timeout)"
   case $code in
     200) live_args=(--live "$work/live.json") ;;
-    403|404) log "no live manifest yet (first publish)" ;;
-    *) die "live manifest answered HTTP $code" ;;
+    403)
+      if grep -qiE '^server: *AmazonS3[[:space:]]*$' "$work/live.h" && grep -q '<Code>AccessDenied</Code>' "$work/live.json"; then
+        log "no live manifest yet (first publish)"
+      else
+        die "live manifest answered HTTP 403, but not S3's (a CDN or WAF block?): stopping rather than skip the newer-than-live check"
+      fi ;;
+    *) die "live manifest answered HTTP $code: stopping rather than skip the newer-than-live check" ;;
   esac
 fi
 "${CHECK[@]}" manifest --conf "$CONF" --dir "$DIR" --version "$V" --base-url "$BASE_URL" "${live_args[@]}" \
