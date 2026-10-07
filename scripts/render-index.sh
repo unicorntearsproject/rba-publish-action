@@ -21,6 +21,8 @@ set -euo pipefail
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 # shellcheck source-path=SCRIPTDIR source=lib/catalog.sh
 source "$ROOT/scripts/lib/catalog.sh"
+# shellcheck source-path=SCRIPTDIR source=lib/scratch.sh
+source "$ROOT/scripts/lib/scratch.sh"
 
 die() { echo "render-index: $*" >&2; exit 1; }
 log() { echo "render-index: $*"; }
@@ -49,6 +51,7 @@ for t in aws jq curl openssl python3; do
   command -v "$t" >/dev/null || die "missing tool: $t"
 done
 work=$(mktemp -d "${TMPDIR:-/tmp}/rba-XXXX")
+trap 'scratch_cleanup "$work"' EXIT   # this run's scratch only (lib/scratch.sh)
 
 # Credentials: the publish role, for this process only (as publish-release.sh).
 if ((CI_MODE)); then

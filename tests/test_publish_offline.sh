@@ -6,10 +6,24 @@
 set -euo pipefail
 
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+# shellcheck source-path=SCRIPTDIR/.. source=scripts/lib/scratch.sh
+source "$ROOT/scripts/lib/scratch.sh"
+# The /tmp/rba-* directories that exist before this run (test 26 checks that
+# the scripts leave none behind).
+rba_dirs() { find /tmp -maxdepth 1 -name 'rba-*' -user "$(id -un)" 2>/dev/null | sort; }
+rba_before=$(rba_dirs)
 work=$(mktemp -d /tmp/rba-XXXX)
 export GNUPGHOME=$work/gnupg
 mkdir -m 700 "$GNUPGHOME"
-trap 'gpgconf --kill all >/dev/null 2>&1 || true' EXIT
+# Every throwaway keyring lives under $work: stop each one's gpg-agent (any
+# directory with a pubring.kbx), then remove $work, also on failure.
+kill_agents() {
+  local h
+  while IFS= read -r h; do
+    GNUPGHOME=$h gpgconf --kill all >/dev/null 2>&1 || true
+  done < <(find "$work" -name pubring.kbx -printf '%h\n' 2>/dev/null)
+}
+trap 'kill_agents; scratch_cleanup "$work" 2>/dev/null' EXIT
 
 # A stand-in gh answers the tag lookups and dispatches (tests/fake-gh/gh).
 export PATH="$ROOT/tests/fake-gh:$PATH"
@@ -642,6 +656,37 @@ if [[ $(jq -r .key_url_path "$ROOT/scripts/products/rusty-wave.json") == *"-$wan
   ok "pinned key: published name ends in its sha256 prefix ($want)"
 else nok "pinned key: key_url_path doesn't match the key file"; fi
 GNUPGHOME=$real_home gpgconf --kill all >/dev/null 2>&1 || true
+
+# 26. Nothing left behind (CLAUDE.md, local machine safety): every keyring's
+# gpg-agent stops, and every script run removed its own /tmp/rba-* scratch.
+kill_agents
+if pgrep -ax gpg-agent | grep -F -- "--homedir $work/" >"$work/out"; then
+  nok "no gpg-agent left from this run's keyrings"; cat "$work/out"
+else ok "no gpg-agent left from this run's keyrings"; fi
+leftover=$(comm -13 <(echo "$rba_before") <(rba_dirs) | grep -vxF -- "$work" || true)
+if [[ -z $leftover ]]; then ok "no /tmp/rba-* scratch left by the scripts (only this suite's own, removed on exit)"
+else nok "scratch left behind"; echo "$leftover"; fi
+
+# 27. scratch_cleanup's guards. The paths it must refuse run with
+# SCRATCH_CLEANUP_DRY=1, so even a broken guard couldn't delete them. The
+# symlink case uses /proc/self/cwd (an existing link; none is created).
+sc_dry() { SCRATCH_CLEANUP_DRY=1 scratch_cleanup "$1" 2>&1; }
+for p in /tmp /tmp/ / "$HOME" /tmp/rba "$work/.." "$work/gnupg" /proc/self/cwd; do
+  out=$(sc_dry "$p")
+  if [[ $out == *"would remove"* ]]; then nok "scratch_cleanup would remove $p"
+  else ok "scratch_cleanup refuses $p"; fi
+done
+if [[ $(sc_dry "$work") == *"would remove $work"* ]]; then ok "scratch_cleanup accepts this run's own /tmp/rba-* dir"
+else nok "scratch_cleanup refuses this run's own dir"; fi
+# A real removal: a dedicated dir with a nested file is removed entirely,
+# and an empty argument is a no-op.
+probe=$(mktemp -d /tmp/rba-XXXX)
+mkdir -p "$probe/a/b" && echo x >"$probe/a/b/f"
+scratch_cleanup "$probe" 2>/dev/null
+if [[ ! -e $probe ]]; then ok "scratch_cleanup removes a dedicated dir and its contents"
+else nok "scratch_cleanup left $probe"; fi
+if scratch_cleanup "" 2>/dev/null; then ok "scratch_cleanup with no argument does nothing"
+else nok "scratch_cleanup with no argument failed"; fi
 
 echo "publish offline: $pass passed, $failed failed"
 ((failed == 0))

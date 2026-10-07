@@ -32,6 +32,8 @@ source "$ROOT/scripts/lib/github.sh"
 source "$ROOT/scripts/lib/catalog.sh"
 # shellcheck source-path=SCRIPTDIR source=lib/http.sh
 source "$ROOT/scripts/lib/http.sh"
+# shellcheck source-path=SCRIPTDIR source=lib/scratch.sh
+source "$ROOT/scripts/lib/scratch.sh"
 
 die() { echo "publish: $*" >&2; exit 1; }
 log() { echo "publish: $*"; }
@@ -89,7 +91,8 @@ fi
 work=$(mktemp -d "${TMPDIR:-/tmp}/rba-XXXX")
 export GNUPGHOME=$work/gnupg
 mkdir -m 700 "$GNUPGHOME"
-trap 'gpgconf --kill all >/dev/null 2>&1 || true' EXIT
+# On exit: stop this keyring's gpg-agent, then remove this run's scratch.
+trap 'gpgconf --kill all >/dev/null 2>&1 || true; scratch_cleanup "$work"' EXIT
 
 # --- 1. Names ---------------------------------------------------------------
 names=$("${CHECK[@]}" names --conf "$CONF" --dir "$DIR" --version "$V") \

@@ -46,6 +46,16 @@ Callers pin commit SHAs; each entry names what changed for them.
 
 ### Fixed
 
+- `publish-release.sh`, `render-index.sh` and the offline tests left a
+  `/tmp/rba-*` directory per run, and the tests left a `gpg-agent` per
+  throwaway keyring. Each run now removes its own scratch on exit
+  (`scripts/lib/scratch.sh`: only a `/tmp/rba-<name>` it owns, not a
+  symlink, real path checked first). The suite stops every keyring's agent
+  from one EXIT trap. New tests: no agent and no `/tmp/rba-*` left after a
+  run; the cleanup's guards (refuses `/tmp`, `/`, `$HOME`, `/tmp/rba`,
+  nested paths, `..` and a symlink, all in dry-run mode). CI runs the suite
+  twice and fails if anything is left. The symlink test in
+  `test_release_check.py` now mocks the link instead of creating one.
 - The post-publish length check used `curl -w '%header{content-length}'`,
   which needs curl 7.84; ubuntu-22.04's curl 7.81 prints it literally, so
   `v1.0.0-rc2`'s run (correctly published) failed every length check. The

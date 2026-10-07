@@ -7,6 +7,7 @@ import os
 import sys
 import tempfile
 import unittest
+from unittest import mock
 import zipfile
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts", "lib"))
@@ -228,9 +229,14 @@ class ReleaseTests(unittest.TestCase):
             rc.check_names(CONF, self.d, "0.0.6")
 
     def test_symlink_rejected(self):
-        os.symlink("/etc/hostname", os.path.join(self.d, "rusty-wave-web-0.0.5.zip.lnk"))
-        with self.assertRaisesRegex(rc.CheckError, "not a regular file"):
-            rc.check_names(CONF, self.d, V)
+        # No real symlink (CLAUDE.md: never create symlinks in /tmp): a regular
+        # file that os.path.islink reports as a link takes the same path.
+        lnk = os.path.join(self.d, "rusty-wave-web-0.0.5.zip.lnk")
+        open(lnk, "w").close()
+        real_islink = os.path.islink
+        with mock.patch.object(os.path, "islink", lambda p: p == lnk or real_islink(p)):
+            with self.assertRaisesRegex(rc.CheckError, "not a regular file"):
+                rc.check_names(CONF, self.d, V)
 
     def test_appimage_without_zsync_rejected(self):
         os.remove(os.path.join(self.d, "rusty-wave-0.0.5-x86_64.AppImage.zsync"))
@@ -240,10 +246,10 @@ class ReleaseTests(unittest.TestCase):
 
     def test_partial_platform_set_allowed(self):
         tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
         make_release(tmp.name, skip=("macos-dmg",))
         rc.check_names(CONF, tmp.name, V)
         rc.check_manifest(CONF, tmp.name, V, BASE)
-        tmp.cleanup()
 
     def test_tampered_file_fails_checksums(self):
         with open(os.path.join(self.d, "rusty-wave_0.0.5_amd64.deb"), "ab") as f:

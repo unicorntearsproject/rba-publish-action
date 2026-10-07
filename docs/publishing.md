@@ -28,6 +28,12 @@ It needs `aws` (CLI v2 with `put-object --if-none-match`), `gh`, `gpg`, `jq`,
 `curl` (7.81 or newer; it logs which), `openssl` and `python3`. The script
 checks them first.
 
+Each run works in its own `mktemp` directory (`$TMPDIR` or `/tmp`) with a
+throwaway keyring. On exit, even on failure, it stops that keyring's
+`gpg-agent` and removes the directory: only a `/tmp/rba-<name>` directory
+it owns, never a symlink, never anything outside `/tmp`
+([`scripts/lib/scratch.sh`](../scripts/lib/scratch.sh)).
+
 ## What the release directory must contain
 
 - The release files, **only** names from the product's list

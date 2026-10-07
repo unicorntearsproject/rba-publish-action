@@ -30,3 +30,13 @@ jobs:
         run: python3 -m unittest discover -s tests -p 'test_*.py'
       - name: The scripts, offline (fake aws, gh and curl)
         run: tests/test_publish_offline.sh
+      # Twice, then nothing may be left: no /tmp/rba-* scratch, no gpg-agent
+      # with a home under /tmp (each run cleans up after itself).
+      - name: The scripts, offline, again
+        run: tests/test_publish_offline.sh
+      - name: Nothing left behind
+        run: |
+          left=$(find /tmp -maxdepth 1 -name 'rba-*' 2>/dev/null || true)
+          agents=$(pgrep -ax gpg-agent | grep -F -- '--homedir /tmp/' || true)
+          [[ -z $left && -z $agents ]] || { echo "::error::left behind: $left $agents"; exit 1; }
+          echo "no /tmp/rba-* scratch and no gpg-agent under /tmp"
