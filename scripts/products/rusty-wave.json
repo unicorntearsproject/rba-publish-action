@@ -1,0 +1,95 @@
+{
+  "product": "rusty-wave",
+  "display_name": "Rusty Wave",
+  "key_file": "keys/rusty-wave-release.asc",
+  "key_fingerprint": "E13FF843723D54068E45A3FF54BF2FA407093CEE",
+  "manifest": "rusty-wave-latest.json",
+  "files": {
+    "linux-appimage": "rusty-wave-{v}-x86_64.AppImage",
+    "linux-appimage-zsync": "rusty-wave-{v}-x86_64.AppImage.zsync",
+    "linux-deb": "rusty-wave_{deb_v}_amd64.deb",
+    "linux-rpm": "rusty-wave-{rpm_vr}.x86_64.rpm",
+    "linux-tarball": "rusty-wave-{v}-linux-x86_64.tar.gz",
+    "linux-flatpak": "io.github.unicorntearsproject.RustyWave-{v}.flatpak",
+    "windows-installer": "rusty-wave-{v}-x64-Setup.exe",
+    "windows-portable": "rusty-wave-{v}-windows-x64.zip",
+    "macos-dmg": "rusty-wave-{v}-macos-universal.dmg",
+    "web-pwa": "rusty-wave-web-{v}.zip",
+    "checksums": "rusty-wave-{v}-SHA256SUMS"
+  },
+  "checksums_file": "checksums",
+  "aliases": {
+    "linux-appimage": "rusty-wave-latest-x86_64.AppImage",
+    "linux-appimage-zsync": "rusty-wave-latest-x86_64.AppImage.zsync",
+    "linux-deb": "rusty-wave-latest_amd64.deb",
+    "linux-rpm": "rusty-wave-latest.x86_64.rpm",
+    "linux-flatpak": "io.github.unicorntearsproject.RustyWave-latest.flatpak",
+    "linux-tarball": "rusty-wave-latest-linux-x86_64.tar.gz",
+    "windows-installer": "rusty-wave-latest-x64-Setup.exe",
+    "windows-portable": "rusty-wave-latest-windows-x64.zip",
+    "macos-dmg": "rusty-wave-latest-macos-universal.dmg",
+    "web-pwa": "rusty-wave-web-latest.zip"
+  },
+  "zsync": {
+    "control": "linux-appimage-zsync",
+    "target": "linux-appimage"
+  },
+  "source_repo": "unicorntearsproject/rusty-media-player",
+  "build_info": {
+    "file": "web-pwa",
+    "path": "build-info.json"
+  },
+  "notify": {
+    "repo": "unicorntearsproject/rba-app-rusty-wave",
+    "workflow": "deploy-wave.yml",
+    "ref": "main"
+  },
+  "platforms": {
+    "linux-appimage": {
+      "os": "linux",
+      "kind": "portable",
+      "label": "AppImage"
+    },
+    "linux-deb": {
+      "os": "linux",
+      "kind": "package",
+      "label": "Debian/Ubuntu (.deb)"
+    },
+    "linux-rpm": {
+      "os": "linux",
+      "kind": "package",
+      "label": "Fedora/RHEL (.rpm)"
+    },
+    "linux-flatpak": {
+      "os": "linux",
+      "kind": "package",
+      "label": "Flatpak"
+    },
+    "linux-tarball": {
+      "os": "linux",
+      "kind": "portable",
+      "label": "Linux tarball (.tar.gz)"
+    },
+    "windows-installer": {
+      "os": "windows",
+      "kind": "installer",
+      "label": "Windows installer (.exe)"
+    },
+    "windows-portable": {
+      "os": "windows",
+      "kind": "portable",
+      "label": "Windows portable (.zip)"
+    },
+    "macos-dmg": {
+      "os": "macos",
+      "kind": "installer",
+      "label": "macOS (.dmg)"
+    },
+    "web-pwa": {
+      "os": "any",
+      "kind": "web",
+      "label": "Web app (.zip)"
+    }
+  },
+  "key_url_path": "keys/rusty-wave-release-E13FF843-3fbb82dc.asc"
+}

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Test stand-in for `gh` (tests/test_publish_offline.sh). Answers like the
+# GitHub API after --jq, driven by:
+#   FAKE_GH_TAG       lightweight | annotated | missing | error
+#   FAKE_GH_SHA       the commit the tag resolves to
+#   FAKE_GH_DISPATCH  ok | fail
+#   FAKE_GH_LOG       every call is appended here (args, token presence, stdin)
+set -euo pipefail
+log=${FAKE_GH_LOG:-/dev/null}
+echo "gh $* | token=${GH_TOKEN:+set}" >>"$log"
+[[ ${1:-} == api ]] || { echo "fake gh: unsupported: $*" >&2; exit 2; }
+shift
+args=" $* "
+case $args in
+  *" repos/"*"/git/ref/tags/"*)
+    case ${FAKE_GH_TAG:-lightweight} in
+      lightweight) echo "commit $FAKE_GH_SHA" ;;
+      annotated) echo "tag 68f6ac579b3fe5d5fcc81254285b0fcaa1df888b" ;;
+      missing) echo 'gh: Not Found (HTTP 404)' >&2; exit 1 ;;
+      error) echo 'error connecting to api.github.com' >&2; exit 1 ;;
+    esac ;;
+  *" repos/"*"/git/tags/68f6ac579b3fe5d5fcc81254285b0fcaa1df888b "*)
+    echo "commit $FAKE_GH_SHA" ;;
+  *" repos/"*"/actions/workflows/"*"/dispatches "*)
+    [[ ${FAKE_GH_DISPATCH:-ok} == ok ]] || { echo 'gh: Resource not accessible by personal access token (HTTP 403)' >&2; exit 1; } ;;
+  *) echo "fake gh: unexpected api call: $*" >&2; exit 2 ;;
+esac

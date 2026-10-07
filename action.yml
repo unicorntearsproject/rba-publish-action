@@ -1,0 +1,136 @@
+# Publish a signed release to software.rustybucket.ai from GitHub Actions.
+# Runs the same publish-release.sh as a local publish, with the caller's
+# GitHub OIDC token instead of a local AWS profile (docs/publishing.md).
+#
+# Nothing deployment-specific is in this repository. The publish role's ARN
+# comes from the caller (a secret); after assuming it, the action reads the
+# bucket and the distribution from an SSM parameter the role may read. The
+# caller's logs may be public, so the account ID, the role ARN, the bucket
+# and the distribution are masked before anything can print them.
+#
+# The calling job runs on a v* tag push (the role trusts only that), declares
+# no environment (it would change the OIDC subject), and has
+#   permissions: { id-token: write, contents: read }
+# A dry run doesn't assume the role (it never touches AWS), so it runs on any
+# ref; with preflight: "true" it stops before the tag gate, to check the
+# files on a branch before the tag exists.
+# Pin this action by commit SHA:
+#   uses: unicorntearsproject/rba-publish-action@<sha>
+name: Publish to software.rustybucket.ai
+description: Verify and publish a signed, tagged release to software.rustybucket.ai.
+
+inputs:
+  tag:
+    description: Release tag, v<semver> (must exist in the product's source repo).
+    required: true
+  product:
+    description: Product config in scripts/products/.
+    default: rusty-wave
+  release-dir:
+    description: Directory holding the release files (or use artifact-name).
+    default: ""
+  artifact-name:
+    description: Name of an artifact from this workflow run holding the release files.
+    default: ""
+  role-arn:
+    description: The publish role's ARN. Pass a secret (secrets.RBA_PUBLISH_ROLE_ARN), never a literal. Not needed for a dry run.
+    default: ""
+  settings-parameter:
+    description: SSM parameter (JSON with bucket and distribution_id) the role may read.
+    default: /rusty-bucket/publish/settings
+  source-token:
+    description: Token that can read the source repo's tags (the caller's own token).
+    default: ${{ github.token }}
+  dispatch-token:
+    description: Fine-grained token with Actions read/write on the notify repo (starts its deploy workflow).
+    default: ""
+  dry-run:
+    description: Run every check and print the plan, but write nothing (no AWS role needed).
+    default: "false"
+  preflight:
+    description: With dry-run, the file checks only (names, signatures, sums, manifest, zsync, newer than live); stops before the tag gate.
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    # First, before anything else can print them.
+    - name: Mask the role and the account ID
+      shell: bash
+      env:
+        ROLE_ARN: ${{ inputs.role-arn }}
+      run: '"$GITHUB_ACTION_PATH/scripts/ci-settings.sh" mask'
+
+    - name: Check inputs
+      shell: bash
+      env:
+        RELEASE_DIR: ${{ inputs.release-dir }}
+        ARTIFACT: ${{ inputs.artifact-name }}
+        DRY_RUN: ${{ inputs.dry-run }}
+        PREFLIGHT: ${{ inputs.preflight }}
+        ROLE_ARN: ${{ inputs.role-arn }}
+        PRODUCT: ${{ inputs.product }}
+      run: |
+        if [[ -n $RELEASE_DIR && -n $ARTIFACT ]] || [[ -z $RELEASE_DIR && -z $ARTIFACT ]]; then
+          echo "::error::give exactly one of release-dir or artifact-name"; exit 1
+        fi
+        [[ $DRY_RUN == true || $DRY_RUN == false ]] || { echo "::error::dry-run must be true or false"; exit 1; }
+        [[ $PREFLIGHT == true || $PREFLIGHT == false ]] || { echo "::error::preflight must be true or false"; exit 1; }
+        if [[ $PREFLIGHT == true && $DRY_RUN != true ]]; then
+          echo "::error::preflight needs dry-run: true"; exit 1
+        fi
+        if [[ $DRY_RUN == false && -z $ROLE_ARN ]]; then
+          echo "::error::role-arn is needed to publish (pass the secret)"; exit 1
+        fi
+        [[ $PRODUCT =~ ^[a-z][a-z0-9-]*$ && -f $GITHUB_ACTION_PATH/scripts/products/$PRODUCT.json ]] \
+          || { echo "::error::no product config for $PRODUCT"; exit 1; }
+
+    - name: Download the release artifact
+      if: inputs.artifact-name != ''
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ${{ runner.temp }}/rba-release
+
+    - name: Show what runs (SHA-256)
+      shell: bash
+      env:
+        PRODUCT: ${{ inputs.product }}
+      run: |
+        cd "$GITHUB_ACTION_PATH" && sha256sum scripts/*.sh scripts/lib/*.sh scripts/lib/*.py \
+          "scripts/products/$PRODUCT.json" config.env keys/*.asc vendor/software-kit.sha256
+
+    - name: Assume the publish role (GitHub OIDC)
+      if: inputs.dry-run != 'true'
+      uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+      with:
+        role-to-assume: ${{ inputs.role-arn }}
+        aws-region: us-east-1
+        role-session-name: publish-${{ inputs.product }}-${{ github.run_id }}
+        role-duration-seconds: 3600
+        mask-aws-account-id: true
+
+    - name: Read the deployment settings (masked)
+      if: inputs.dry-run != 'true'
+      shell: bash
+      env:
+        ROLE_ARN: ${{ inputs.role-arn }}
+        SETTINGS_PARAMETER: ${{ inputs.settings-parameter }}
+      run: '"$GITHUB_ACTION_PATH/scripts/ci-settings.sh" read "$RUNNER_TEMP/rba-settings.env"'
+
+    - name: Publish
+      shell: bash
+      env:
+        PRODUCT: ${{ inputs.product }}
+        TAG: ${{ inputs.tag }}
+        RELEASE_DIR: ${{ inputs.release-dir != '' && inputs.release-dir || format('{0}/rba-release', runner.temp) }}
+        DRY_RUN: ${{ inputs.dry-run }}
+        PREFLIGHT: ${{ inputs.preflight }}
+        PUBLISH_SOURCE_TOKEN: ${{ inputs.source-token }}
+        PUBLISH_DISPATCH_TOKEN: ${{ inputs.dispatch-token }}
+      run: |
+        args=("$PRODUCT" "$TAG" "$RELEASE_DIR" --ci)
+        [[ $DRY_RUN == true ]] && args+=(--dry-run)
+        [[ $PREFLIGHT == true ]] && args+=(--preflight)
+        if [[ $DRY_RUN == false ]]; then export RBA_SETTINGS=$RUNNER_TEMP/rba-settings.env; fi
+        "$GITHUB_ACTION_PATH/scripts/publish-release.sh" "${args[@]}"

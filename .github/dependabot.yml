@@ -1,0 +1,8 @@
+# Pinned action SHAs (the workflow and action.yml) get update PRs; each one
+# is reviewed like any other change.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

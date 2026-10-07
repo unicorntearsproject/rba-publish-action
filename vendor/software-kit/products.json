@@ -1,0 +1,68 @@
+{
+ "rusty-wave": {
+  "name": "Rusty Wave",
+  "tagline": "A neon media player for your own video and music.",
+  "pitch": "Plays your video and music files on Linux, Windows and macOS, or right in the browser, where it installs as an app and keeps working offline.",
+  "icon": "rusty-wave-icon",
+  "accent": "violet",
+  "try_url": "https://wave.rustybucket.ai/",
+  "latest_base": "https://software.rustybucket.ai/rusty-wave/latest/",
+  "platforms": [
+   {
+    "platform_id": "linux-appimage",
+    "os": "linux",
+    "label": "AppImage",
+    "alias": "rusty-wave-latest-x86_64.AppImage"
+   },
+   {
+    "platform_id": "linux-deb",
+    "os": "linux",
+    "label": "Debian/Ubuntu (.deb)",
+    "alias": "rusty-wave-latest_amd64.deb"
+   },
+   {
+    "platform_id": "linux-rpm",
+    "os": "linux",
+    "label": "Fedora/RHEL (.rpm)",
+    "alias": "rusty-wave-latest.x86_64.rpm"
+   },
+   {
+    "platform_id": "linux-flatpak",
+    "os": "linux",
+    "label": "Flatpak (.flatpak)",
+    "alias": "io.github.unicorntearsproject.RustyWave-latest.flatpak"
+   },
+   {
+    "platform_id": "linux-tarball",
+    "os": "linux",
+    "label": "Linux tarball (.tar.gz)",
+    "alias": "rusty-wave-latest-linux-x86_64.tar.gz"
+   },
+   {
+    "platform_id": "windows-installer",
+    "os": "windows",
+    "label": "Windows installer (.exe)",
+    "alias": "rusty-wave-latest-x64-Setup.exe"
+   },
+   {
+    "platform_id": "windows-portable",
+    "os": "windows",
+    "label": "Windows portable (.zip)",
+    "alias": "rusty-wave-latest-windows-x64.zip"
+   },
+   {
+    "platform_id": "macos-dmg",
+    "os": "macos",
+    "label": "macOS (.dmg)",
+    "alias": "rusty-wave-latest-macos-universal.dmg",
+    "note": "Unsigned beta"
+   },
+   {
+    "platform_id": "web-pwa",
+    "os": "any",
+    "label": "Web app (.zip)",
+    "alias": "rusty-wave-web-latest.zip"
+   }
+  ]
+ }
+}

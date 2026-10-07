@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# Test stand-in for the AWS CLI (tests/test_publish_offline.sh). The bucket
+# is a directory, FAKE_S3_DIR, mirroring its keys. Honours If-None-Match
+# (PreconditionFailed) and returns base64 SHA-256 checksums like S3.
+# Every call is appended to FAKE_AWS_LOG. For the masking test (test 22):
+# FAKE_SSM ok|denied (ok prints FAKE_SSM_VALUE), FAKE_CALLER_ARN for
+# get-caller-identity, FAKE_PUT=denied fails uploads like S3 AccessDenied.
+set -euo pipefail
+echo "aws $*" >>"${FAKE_AWS_LOG:-/dev/null}"
+if [[ " $* " == *" --generate-cli-skeleton "* ]]; then
+  echo '{"Bucket": "", "Key": "", "IfNoneMatch": ""}'; exit 0
+fi
+root=${FAKE_S3_DIR:?}
+svc=$1 op=$2
+shift 2
+key="" body="" inm=0 out=""
+while (($#)); do
+  case $1 in
+    --key) key=$2; shift ;;
+    --body) body=$2; shift ;;
+    --if-none-match) inm=1; shift ;;
+    --bucket|--region|--query|--output|--profile|--role-arn|--role-session-name|--content-type| \
+    --cache-control|--checksum-sha256|--checksum-mode|--distribution-id|--paths|--id|--duration-seconds|--name) shift ;;
+    --*) ;;
+    *) out=$1 ;;
+  esac
+  shift
+done
+b64() { openssl dgst -sha256 -binary "$1" | base64; }
+denied() { # action resource
+  echo "An error occurred (AccessDeniedException) when calling the $1 operation: User: ${FAKE_CALLER_ARN:-?} is not authorized to perform: $1 on resource: $2" >&2
+  exit 254
+}
+case "$svc $op" in
+  "ssm get-parameter")
+    [[ ${FAKE_SSM:-ok} == ok ]] || denied ssm:GetParameter "arn:aws:ssm:us-east-1:${FAKE_ACCOUNT:-0}:parameter/x"
+    printf '%s\n' "${FAKE_SSM_VALUE:?}" ;;
+  "sts get-caller-identity")
+    echo "${FAKE_CALLER_ARN:?}" ;;
+  "sts assume-role")
+    echo '{"AccessKeyId":"AKIAFAKE","SecretAccessKey":"fake","SessionToken":"fake"}' ;;
+  "s3api list-objects-v2")
+    (cd "$root" && find . -type f | sed 's|^\./||' | sort | while read -r k; do
+      jq -cn --arg k "$k" --argjson s "$(stat -c %s "$k")" '{Key: $k, Size: $s, LastModified: "2026-10-07T00:00:00Z"}'
+    done) | jq -s 'if length == 0 then null else . end' ;;
+  "s3api get-object")
+    [[ -f $root/$key ]] || { echo "An error occurred (NoSuchKey) when calling the GetObject operation" >&2; exit 254; }
+    cp -- "$root/$key" "$out"; echo '{}' ;;
+  "s3api head-object")
+    [[ -f $root/$key ]] || { echo "An error occurred (404) when calling the HeadObject operation" >&2; exit 254; }
+    b64 "$root/$key" ;;
+  "s3api put-object")
+    [[ ${FAKE_PUT:-ok} == ok ]] || denied s3:PutObject "arn:aws:s3:::${FAKE_BUCKET:-?}/$key"
+    if ((inm)) && [[ -f $root/$key ]]; then
+      echo "An error occurred (PreconditionFailed) when calling the PutObject operation" >&2; exit 254
+    fi
+    mkdir -p "$(dirname "$root/$key")"; cp -- "$body" "$root/$key"; echo '{}' ;;
+  "cloudfront create-invalidation") echo "IFAKE" ;;
+  "cloudfront wait") ;;
+  *) echo "fake aws: unsupported: $svc $op" >&2; exit 2 ;;
+esac

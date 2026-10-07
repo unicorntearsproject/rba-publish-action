@@ -1,0 +1,27 @@
+# Offline tests and the repository scan. No secrets, read-only token: safe for
+# pull requests from forks.
+name: Test
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0             # the scan reads every commit's metadata
+          persist-credentials: false
+      - name: Scan for anything identifying or secret
+        run: tests/scan_repo.sh
+      - name: Shellcheck
+        run: shellcheck -x -S warning scripts/*.sh scripts/lib/*.sh tests/*.sh tests/fake-aws/aws tests/fake-gh/gh
+      - name: Release checks and catalog (Python)
+        run: python3 -m unittest discover -s tests -p 'test_*.py'
+      - name: The scripts, offline (fake aws and gh)
+        run: tests/test_publish_offline.sh
