@@ -28,6 +28,10 @@ It needs `aws` (CLI v2 with `put-object --if-none-match`), `gh`, `gpg`, `jq`,
 `curl` (7.81 or newer; it logs which), `openssl` and `python3`. The script
 checks them first.
 
+Every request the scripts make to the site sends the User-Agent
+`rba-publish-verify/1`, so the site's usage report counts it as our own
+automation, not a download.
+
 Each run works in its own `mktemp` directory (`$TMPDIR` or `/tmp`) with a
 throwaway keyring. On exit, even on failure, it stops that keyring's
 `gpg-agent` and removes the directory: only a `/tmp/rba-<name>` directory

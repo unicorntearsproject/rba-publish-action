@@ -5,20 +5,23 @@
 #   FAKE_CURL  s3-403 | s3-404 | waf-403 | ok | 503 | timeout   (GET, test 23)
 #              head-ok | head-nolength | head-404 | head-fail   (-I, test 24)
 #   FAKE_CURL_BODY  the body for "ok" (a manifest); FAKE_CURL_LEN for head-ok
+#   FAKE_CURL_LOG   if set, each call appends "ua=<its -A value>" there
 set -euo pipefail
-out=/dev/null hdr=/dev/null fmt="" head=0
+out=/dev/null hdr=/dev/null fmt="" head=0 ua="(none)"
 while (($#)); do
   case $1 in
     --version) echo "curl 7.81.0 (x86_64-pc-linux-gnu) libcurl/7.81.0 (fake)"; exit 0 ;;
     -o) out=$2; shift ;;
     -D) hdr=$2; shift ;;
     -w) fmt=$2; shift ;;
+    -A|--user-agent) ua=$2; shift ;;
     -I|--head) head=1 ;;
     -sSI|-sI) head=1 ;;
     --connect-timeout|--max-time) shift ;;
   esac
   shift
 done
+[[ -z ${FAKE_CURL_LOG:-} ]] || echo "ua=$ua" >>"$FAKE_CURL_LOG"
 if ((head)); then
   # Headers to stdout (no -o), then what an old curl does with -w: %{…}
   # variables expand, %header{…} is printed as is.

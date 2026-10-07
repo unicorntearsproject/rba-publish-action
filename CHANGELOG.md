@@ -22,6 +22,12 @@ Callers pin commit SHAs; each entry names what changed for them.
 
 ### Changed
 
+- Every request `publish-release.sh` and `render-index.sh` make to the site
+  (the live-manifest fetch, the length, hash, catalog and range checks)
+  sends the User-Agent `rba-publish-verify/1` (`RBA_UA` in
+  `scripts/lib/http.sh`), so the site's usage report counts them as our
+  automation, not downloads. Tests: every curl to the site passes it, and
+  the stand-in curl sees it on the wire.
 - The vendored page kit is RBA Web Site's `software-kit/` at `0060426` (17
   files, verified against Web Site's manifest): the footer gains X and
   GitHub links with inline SVG icons (`assets/social.html`, inlined by

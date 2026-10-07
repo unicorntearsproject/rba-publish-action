@@ -140,7 +140,7 @@ else
   # with its AccessDenied XML) means "nothing live yet". Anything else (a
   # CDN or WAF block, a 5xx, a timeout) stops, so the newer-than-live check
   # is never skipped.
-  code=$(curl -sS --connect-timeout 20 --max-time 120 -D "$work/live.h" -o "$work/live.json" -w '%{http_code}' \
+  code=$(curl -sS -A "$RBA_UA" --connect-timeout 20 --max-time 120 -D "$work/live.h" -o "$work/live.json" -w '%{http_code}' \
     "$BASE_URL/$PRODUCT/latest/$MANIFEST") || die "can't fetch the live manifest (network error or timeout)"
   case $code in
     200) live_args=(--live "$work/live.json") ;;
@@ -316,9 +316,9 @@ log "invalidated /* ($inv)"
 # --- 9. Verify through the public URL ---------------------------------------
 fail=0
 bad() { log "FAIL $*"; fail=1; }
-same_sha() { [[ $(curl -sS "$1" | sha256sum | cut -d' ' -f1) == "$(sha256sum <"$2" | cut -d' ' -f1)" ]]; }
+same_sha() { [[ $(curl -sS -A "$RBA_UA" "$1" | sha256sum | cut -d' ' -f1) == "$(sha256sum <"$2" | cut -d' ' -f1)" ]]; }
 same_sha "$BASE_URL/$PRODUCT/latest/$MANIFEST" "$DIR/$MANIFEST" || bad "live manifest differs from $MANIFEST"
-live_latest=$(curl -sS "$BASE_URL/$CATALOG_KEY" | jq -r --arg p "$PRODUCT" '.products[] | select(.id == $p) | .latest_version') \
+live_latest=$(curl -sS -A "$RBA_UA" "$BASE_URL/$CATALOG_KEY" | jq -r --arg p "$PRODUCT" '.products[] | select(.id == $p) | .latest_version') \
   || live_latest=""
 [[ $live_latest == "$V" ]] || bad "catalog says $PRODUCT latest is '${live_latest}', want $V"
 same_sha "$BASE_URL/$(conf key_url_path)" "$KEY_FILE" || bad "published key differs from $KEY_FILE"
@@ -342,7 +342,7 @@ target=${zs_target:+$(name_of "$zs_target")}
 if [[ -n $target && -f $DIR/$target ]]; then
   url=$BASE_URL/$PREFIX/$target
   range_check() {
-    curl -sS -D "$work/h" -o "$work/b" -H "Range: bytes=$1" "$url"
+    curl -sS -A "$RBA_UA" -D "$work/h" -o "$work/b" -H "Range: bytes=$1" "$url"
     "${CHECK[@]}" ranges --file "$DIR/$target" --headers "$work/h" --body "$work/b" --ranges "$1"
   }
   if out=$(range_check 0-1023,4096-8191 2>&1); then log "multi-range, cold edge: $out"

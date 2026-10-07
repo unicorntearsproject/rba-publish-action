@@ -23,6 +23,8 @@ ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 source "$ROOT/scripts/lib/catalog.sh"
 # shellcheck source-path=SCRIPTDIR source=lib/scratch.sh
 source "$ROOT/scripts/lib/scratch.sh"
+# shellcheck source-path=SCRIPTDIR source=lib/http.sh
+source "$ROOT/scripts/lib/http.sh"
 
 die() { echo "render-index: $*" >&2; exit 1; }
 log() { echo "render-index: $*"; }
@@ -157,6 +159,6 @@ inv=$(aws cloudfront create-invalidation --region "$REGION" --distribution-id "$
   --paths '/*' --query Invalidation.Id --output text) || die "invalidation failed"
 aws cloudfront wait invalidation-completed --region "$REGION" --distribution-id "$DISTRIBUTION_ID" \
   --id "$inv" || die "invalidation $inv didn't complete"
-[[ $(curl -sS "$BASE_URL/$CATALOG_KEY" | sha256sum | cut -d' ' -f1) == $(sha256sum <"$work/catalog.json" | cut -d' ' -f1) ]] \
+[[ $(curl -sS -A "$RBA_UA" "$BASE_URL/$CATALOG_KEY" | sha256sum | cut -d' ' -f1) == $(sha256sum <"$work/catalog.json" | cut -d' ' -f1) ]] \
   || die "the catalog served by $BASE_URL differs from the one written"
 log "done: catalog and installers pages re-rendered and verified through $BASE_URL"

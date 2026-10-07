@@ -688,5 +688,27 @@ else nok "scratch_cleanup left $probe"; fi
 if scratch_cleanup "" 2>/dev/null; then ok "scratch_cleanup with no argument does nothing"
 else nok "scratch_cleanup with no argument failed"; fi
 
+# 28. Every request our scripts make to the site carries the User-Agent
+# rba-publish-verify/1, so the site's usage report counts it as our
+# automation (its rba-<tool>/ rule), not as a download.
+ua_lines=$(grep -nE '\bcurl\b' "$ROOT"/scripts/*.sh "$ROOT"/scripts/lib/*.sh \
+  | grep -vE '^[^:]+:[0-9]+: *#' | grep -vE 'command -v|curl --version|tools=|for t in' || true)
+if [[ -n $ua_lines ]] && ! grep -v -- '-A "$RBA_UA"' <<<"$ua_lines" | grep -q .; then
+  ok "every curl to the site passes -A \"\$RBA_UA\" ($(wc -l <<<"$ua_lines") calls)"
+else nok "a curl to the site has no -A \"\$RBA_UA\""; grep -v -- '-A "$RBA_UA"' <<<"$ua_lines"; fi
+rba_ua=$(bash -c 'source "$1/scripts/lib/http.sh"; echo "$RBA_UA"' _ "$ROOT")
+if [[ $rba_ua == rba-publish-verify/1 && $rba_ua =~ ^rba-[a-z0-9-]+/ ]]; then
+  ok "RBA_UA is rba-publish-verify/1 (an rba-<tool>/ marker)"
+else nok "RBA_UA is '$rba_ua'"; fi
+# And on the wire, through the stand-in curl: the live-manifest fetch and the
+# length check both send it.
+: >"$work/curl-ua.log"
+FAKE_CURL_LOG=$work/curl-ua.log live_run s3-403 || true
+(export FAKE_CURL=head-ok FAKE_CURL_LEN=1 FAKE_CURL_LOG=$work/curl-ua.log PATH="$ROOT/tests/fake-curl:$PATH"
+ source "$ROOT/scripts/lib/http.sh"; head_status_length https://example.invalid/f) >/dev/null 2>&1 || true
+if [[ $(grep -c . "$work/curl-ua.log") -ge 2 ]] && ! grep -vxq 'ua=rba-publish-verify/1' "$work/curl-ua.log"; then
+  ok "the live-manifest fetch and the length check send rba-publish-verify/1"
+else nok "a request went without the marker"; cat "$work/curl-ua.log"; fi
+
 echo "publish offline: $pass passed, $failed failed"
 ((failed == 0))
