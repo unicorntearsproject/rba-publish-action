@@ -5,6 +5,23 @@ Callers pin commit SHAs; each entry names what changed for them.
 
 ## [Unreleased]
 
+### Fixed
+
+- The post-publish length check used `curl -w '%header{content-length}'`,
+  which needs curl 7.84; ubuntu-22.04's curl 7.81 prints it literally, so
+  `v1.0.0-rc2`'s run (correctly published) failed every length check. The
+  check now reads the status and `Content-Length` from `curl -I`'s headers
+  (`scripts/lib/http.sh`). The run logs its curl version. Tests use a
+  stand-in curl that behaves like 7.81, and CI runs on ubuntu-22.04 and
+  24.04.
+
+### Changed
+
+- A failed post-publish verification no longer skips the downstream
+  notify: the release is already public and its files were verified before
+  upload, and the downstream verifies what it fetches. The run still fails
+  ("published and notified, but verification FAILED").
+
 ### Security
 
 - The live-manifest fetch no longer treats every 403 or 404 as "nothing

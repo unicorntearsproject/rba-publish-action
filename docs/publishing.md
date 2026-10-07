@@ -25,7 +25,8 @@ RBA_SETTINGS=<settings file> scripts/publish-release.sh rusty-wave v1.0.0-rc1 <r
   credentials already in the environment.
 
 It needs `aws` (CLI v2 with `put-object --if-none-match`), `gh`, `gpg`, `jq`,
-`curl`, `openssl` and `python3`. The script checks them first.
+`curl` (7.81 or newer; it logs which), `openssl` and `python3`. The script
+checks them first.
 
 ## What the release directory must contain
 
@@ -89,7 +90,11 @@ Nothing else: no `index.html`, no `-latest` files, no subdirectories.
 8. Prints a `CHANGELOG:` line for the publisher's changelog.
 9. Starts the product's downstream deploy workflow, if configured
    (`notify` in the product config). If that fails, it prints a loud WARN
-   and the exact command to retry; the publish itself still succeeds.
+   and the exact command to retry; the publish itself still succeeds. It
+   notifies **even when step 7 failed**: the release is already public,
+   its files were verified before upload and in the bucket, and the
+   downstream verifies what it fetches itself. The run then still fails,
+   so a person looks.
 
 ## In GitHub Actions
 
@@ -138,7 +143,7 @@ loudly. Any other version without a record stops the render.
 | "live manifest answered HTTP …" / "can't fetch the live manifest" | The live manifest couldn't be read reliably (a CDN or WAF block, an error, a timeout); nothing was uploaded | Find out why the site answered that way, then re-run |
 | "already exists with different content" | A published version can't change | Release a new version |
 | After uploads, before the manifest | Versioned files are there, `latest/` unchanged | Re-run the same command: identical files are accepted |
-| Verification FAILED | Published; something didn't check out | Report it to the site's maintainers |
+| "published and notified, but verification FAILED" | Published, and the downstream was told; a CDN check didn't pass | Report it to the site's maintainers |
 
 **Related:** [README](../README.md) · [Catalog](catalog.md) ·
 [Keys](../keys/README.md) · [Vendor](../vendor/README.md)

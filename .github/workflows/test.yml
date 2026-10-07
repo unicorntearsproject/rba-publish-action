@@ -11,7 +11,12 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-24.04
+    # Both runner images callers use: 22.04's tools are older (curl 7.81).
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

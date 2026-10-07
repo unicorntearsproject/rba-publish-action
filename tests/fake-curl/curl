@@ -1,19 +1,36 @@
 #!/usr/bin/env bash
-# Test stand-in for curl (tests/test_publish_offline.sh, test 23): answers
-# the live-manifest fetch the way S3 or CloudFront would.
-#   FAKE_CURL  s3-403 | s3-404 | waf-403 | ok | 503 | timeout
-#   FAKE_CURL_BODY  the body for "ok" (a manifest)
+# Test stand-in for curl (tests/test_publish_offline.sh, tests 23-24). It
+# behaves like ubuntu-22.04's curl 7.81: no -w '%header{…}', which it prints
+# literally, as the real one does.
+#   FAKE_CURL  s3-403 | s3-404 | waf-403 | ok | 503 | timeout   (GET, test 23)
+#              head-ok | head-nolength | head-404 | head-fail   (-I, test 24)
+#   FAKE_CURL_BODY  the body for "ok" (a manifest); FAKE_CURL_LEN for head-ok
 set -euo pipefail
-out=/dev/null hdr=/dev/null fmt=""
+out=/dev/null hdr=/dev/null fmt="" head=0
 while (($#)); do
   case $1 in
+    --version) echo "curl 7.81.0 (x86_64-pc-linux-gnu) libcurl/7.81.0 (fake)"; exit 0 ;;
     -o) out=$2; shift ;;
     -D) hdr=$2; shift ;;
     -w) fmt=$2; shift ;;
+    -I|--head) head=1 ;;
+    -sSI|-sI) head=1 ;;
     --connect-timeout|--max-time) shift ;;
   esac
   shift
 done
+if ((head)); then
+  # Headers to stdout (no -o), then what an old curl does with -w: %{…}
+  # variables expand, %header{…} is printed as is.
+  case ${FAKE_CURL:?} in
+    head-ok) printf 'HTTP/2 200\r\ncontent-type: application/octet-stream\r\ncontent-length: %s\r\n\r\n' "${FAKE_CURL_LEN:?}" ;;
+    head-nolength) printf 'HTTP/2 200\r\ncontent-type: text/plain\r\n\r\n' ;;
+    head-404) printf 'HTTP/2 404\r\ncontent-type: application/xml\r\n\r\n' ;;
+    head-fail) echo "curl: (6) Could not resolve host" >&2; exit 6 ;;
+  esac
+  [[ -z $fmt ]] || printf '%s' "${fmt//\%\{http_code\}/200}"
+  exit 0
+fi
 respond() { # code server content-type body
   printf 'HTTP/2 %s\r\nserver: %s\r\ncontent-type: %s\r\n\r\n' "$1" "$2" "$3" >"$hdr"
   printf '%s' "$4" >"$out"

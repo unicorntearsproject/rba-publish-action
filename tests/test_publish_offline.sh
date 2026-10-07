@@ -567,5 +567,34 @@ fi
 if [[ -s $work/tripwire.log ]]; then nok "live: aws or gh called"; cat "$work/tripwire.log"
 else ok "live: no aws or gh calls"; fi
 
+# 24. The post-publish length check works with an old curl (ubuntu-22.04's
+# 7.81 has no -w '%header{…}'; v1.0.0-rc2's run printed it literally and
+# failed every length check). head_status_length reads the headers instead.
+head_run() { # mode [len]: head_status_length through the stand-in curl
+  (export FAKE_CURL=$1 FAKE_CURL_LEN=${2:-} PATH="$ROOT/tests/fake-curl:$PATH"
+   source "$ROOT/scripts/lib/http.sh"; head_status_length https://example.invalid/f) >"$work/out" 2>&1
+}
+if head_run head-ok 7354872 && [[ $(cat "$work/out") == "200 7354872" ]]; then ok "length check: status and length from the headers"
+else nok "length check: wrong answer"; cat "$work/out"; fi
+if head_run head-nolength && [[ $(cat "$work/out") == "200 -" ]]; then ok "length check: no Content-Length is '-', never a match"
+else nok "length check: missing length"; cat "$work/out"; fi
+if head_run head-404 && [[ $(cat "$work/out") == "404 -" ]]; then ok "length check: a 404 is reported as 404"
+else nok "length check: 404"; cat "$work/out"; fi
+if head_run head-fail; then nok "length check: curl failure accepted"; else ok "length check: curl failure fails"; fi
+# The stand-in really is an old curl: it prints %header{} literally.
+if [[ $(FAKE_CURL=head-ok FAKE_CURL_LEN=1 PATH="$ROOT/tests/fake-curl:$PATH" curl -sSI -o /dev/null -w '%{http_code} %header{content-length}' x | tail -c 30) == *'%header{content-length}' ]]; then
+  ok "the stand-in curl behaves like 7.81 (%header printed as is)"
+else nok "the stand-in curl expands %header"; fi
+if grep -rn '%header{' "$ROOT/scripts" | grep -vE '^[^:]+:[0-9]+: *#' >"$work/out"; then nok "no %header{} left in the scripts"; cat "$work/out"
+else ok "no %header{} left in the scripts (needs curl 7.84+)"; fi
+# The run logs which curl it uses.
+FAKE_CURL=ok FAKE_CURL_BODY=$work/live-old.json PATH="$work/tripwire:$ROOT/tests/fake-curl:$PATH" \
+  "$ROOT/scripts/publish-release.sh" rusty-wave 0.0.5 "$work/good" --preflight --conf "$work/conf.json" >"$work/out" 2>&1 || true
+expect 'using curl 7.81.0' "the publish log names the curl version"
+# A failed verification still notifies the downstream, then fails the run.
+if awk '/^# --- 10\. Notify downstream/ { n = NR } /verification FAILED \(see above\)"$/ && /die/ { d = NR } END { exit !(n && d > n) }' "$ROOT/scripts/publish-release.sh"; then
+  ok "verification failure: notify first, then fail the run"
+else nok "verification failure: the run stops before notifying"; fi
+
 echo "publish offline: $pass passed, $failed failed"
 ((failed == 0))

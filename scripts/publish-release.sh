@@ -30,6 +30,8 @@ CHECK=(python3 "$ROOT/scripts/lib/release_check.py")
 source "$ROOT/scripts/lib/github.sh"
 # shellcheck source-path=SCRIPTDIR source=lib/catalog.sh
 source "$ROOT/scripts/lib/catalog.sh"
+# shellcheck source-path=SCRIPTDIR source=lib/http.sh
+source "$ROOT/scripts/lib/http.sh"
 
 die() { echo "publish: $*" >&2; exit 1; }
 log() { echo "publish: $*"; }
@@ -78,6 +80,7 @@ tools=(gpg gpgconf jq curl openssl python3 sha256sum)
 for t in "${tools[@]}"; do
   command -v "$t" >/dev/null || die "missing tool: $t"
 done
+log "using $(curl --version | head -n 1 | cut -d' ' -f1-2)"
 if ((!PREFLIGHT)); then
   aws s3api put-object --generate-cli-skeleton input 2>/dev/null | jq -e 'has("IfNoneMatch")' >/dev/null \
     || die "this AWS CLI has no put-object --if-none-match; upgrade AWS CLI v2"
@@ -318,7 +321,8 @@ live_latest=$(curl -sS "$BASE_URL/$CATALOG_KEY" | jq -r --arg p "$PRODUCT" '.pro
 same_sha "$BASE_URL/$(conf key_url_path)" "$KEY_FILE" || bad "published key differs from $KEY_FILE"
 while IFS=$'\t' read -r name size _; do
   for url in "$BASE_URL/$PREFIX/$name" "$BASE_URL/$PREFIX/$name.asc"; do
-    read -r code len < <(curl -sSI -o /dev/null -w '%{http_code} %header{content-length}\n' "$url")
+    out=$(head_status_length "$url") || out="no-answer -"
+    read -r code len <<<"$out"
     [[ $code == 200 ]] || bad "$url: HTTP $code"
     [[ $url == *.asc || $len == "$size" ]] || bad "$url: length $len, want $size"
   done
@@ -362,11 +366,18 @@ else bad "overwrite probe: $(cat "$work/e")"; fi
 # before the bucket policy is consulted. The bucket policy's delete deny is
 # tested separately, by the site's maintainers.)
 
-((fail == 0)) || die "published, but verification FAILED (see above)"
-log "done: $PRODUCT $V published and verified at $BASE_URL/$PREFIX/"
+if ((fail == 0)); then
+  log "done: $PRODUCT $V published and verified at $BASE_URL/$PREFIX/"
+else
+  log "WARN $PRODUCT $V IS published (manifest and aliases live), but verification FAILED (see above)"
+fi
 
 # --- 10. Notify downstream (never fails the publish: it's already out) ------
+# Also after a failed verification: the release is already public, its files
+# were verified before upload and in the bucket, and the downstream verifies
+# what it fetches itself. The run still fails below, so a person looks.
 if jq -e .notify "$CONF" >/dev/null; then
   notify_published "$(conf notify.repo)" "$(conf notify.workflow)" "$(conf notify.ref)" "$V"
 fi
+((fail == 0)) || die "published and notified, but verification FAILED (see above)"
 echo "CHANGELOG: $(date -u +%F) published $PRODUCT $V to $BASE_URL/$PREFIX/ (${#FILES[@]} files), manifest and aliases updated, verified"
