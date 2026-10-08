@@ -116,6 +116,14 @@ name, pinned key (`key_file`, the primary `key_fingerprint`,
 if any of those ships, that one must ship too, for example GPL
 corresponding source with bundled binaries). The scripts, the catalog, the
 pages and the tests (`tests/test_products.py`) work over every config.
+Each pinned key is also checked against a real signature by it
+(`tests/fixtures/`, test 25 of the offline suite), so every product needs
+one there.
+
+| Product | Config | Platforms |
+| --- | --- | --- |
+| Rusty Wave | [`rusty-wave.json`](../scripts/products/rusty-wave.json) | AppImage (with zsync), Flatpak, deb, RPM, tarball, Windows, macOS, web app |
+| U-Stu Video Editor | [`u-studio-video-editor.json`](../scripts/products/u-studio-video-editor.json) | Flatpak with two add-ons (titles, effects), and the GPL corresponding source, required with any Flatpak |
 
 **Every publisher of every product uses the same pinned commit.** Each
 publish rebuilds the catalog and the pages from the configs in its own pin,

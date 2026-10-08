@@ -7,6 +7,17 @@ Callers pin commit SHAs; each entry names what changed for them.
 
 ### Added
 
+- A second product, U-Stu Video Editor (`scripts/products/u-studio-video-editor.json`):
+  three Flatpaks (the editor, titles and effects add-ons) and the GPL
+  corresponding source, which `required_with` makes mandatory whenever a
+  Flatpak ships. Its key is VE's export at `u-studio-video-editor@ca04cc5`
+  (primary `FE210DDD…D13F`, ed25519 sign-only subkey `19157495…0813`,
+  cross-certified, no expiry), published as
+  `keys/u-studio-video-editor-release-FE210DDD-97ab12c5.asc` ([keys](keys/README.md)).
+  Generic tests over every product config (`tests/test_products.py`); test 25
+  now checks every product's pinned key against a real signature by it
+  (U-Stu's signed tag `v0.80.2-beta.1`), and fails for a product without one
+  ([publishing](docs/publishing.md#products)).
 - First public version of the publish action and its scripts: release
   checks (names, signatures by the pinned key or its signing subkey,
   `SHA256SUMS`, the signed manifest with its zsync header, newer than
