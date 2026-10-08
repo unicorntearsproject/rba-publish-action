@@ -64,5 +64,12 @@
     "alias": "rusty-wave-web-latest.zip"
    }
   ]
+ },
+ "u-studio-video-editor": {
+  "name": "U-Stu Video Editor",
+  "tagline": "A fast, focused video editor for people who talk on camera.",
+  "pitch": "Cut livestreams, podcasts and promos on Linux: sync mic and camera by their sound, edit with single keys, add animated titles, effects and transitions, and export an MP4 ready to upload. No account, no network access, and it never touches your original files.",
+  "icon": "u-stu-icon",
+  "accent": "purple"
  }
 }

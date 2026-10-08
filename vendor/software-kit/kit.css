@@ -86,6 +86,10 @@ footer a:hover { color: var(--cyan-400); }
 .accent-cyan { --accent: var(--cyan-400); --accent-glow: var(--glow-cyan); }
 .accent-rust { --accent: #d27336; --accent-glow: 0 0 24px rgba(210,115,54,.55), 0 0 4px rgba(210,115,54,.9); }
 .accent-lime { --accent: var(--lime-500); --accent-glow: 0 0 24px rgba(77,255,90,.45), 0 0 4px rgba(77,255,90,.8); }
+/* U-Stu's brand purple (its dark-mode accent; the kit is dark only). At 4.45:1
+   on the card it's fine for the bar, glow and large name, so small accent text
+   uses the design system's violet-400 instead (WCAG AA 4.5:1) */
+.accent-purple { --accent: #a04bfa; --accent-text: var(--violet-400); --accent-glow: 0 0 24px rgba(160,75,250,.55), 0 0 4px rgba(160,75,250,.9); }
 
 .product {
   position: relative;
@@ -185,7 +189,7 @@ footer a:hover { color: var(--cyan-400); }
 
 /* Verify and previous versions: <details>, no JavaScript */
 details { margin-top: var(--space-5); border-top: var(--border-width) solid var(--border-subtle); padding-top: var(--space-4); }
-summary { color: var(--accent); cursor: pointer; font-weight: var(--weight-bold); }
+summary { color: var(--accent-text, var(--accent)); cursor: pointer; font-weight: var(--weight-bold); }
 .cmd {
   margin: var(--space-3) 0;
   padding: var(--space-4);

@@ -30,7 +30,7 @@ ASSETS = os.path.join(KIT, "assets")
 SITE = "https://software.rustybucket.ai/"
 HOME = "https://rustybucket.ai/"
 OS_GROUPS = [("linux", "Linux"), ("windows", "Windows"), ("macos", "macOS"), ("any", "Web")]
-ACCENTS = {"violet", "magenta", "cyan", "rust", "lime"}
+ACCENTS = {"violet", "magenta", "cyan", "rust", "lime", "purple"}
 HEX = {40: re.compile(r"^[0-9A-F]{40}$"), 64: re.compile(r"^[0-9a-f]{64}$")}
 
 e = lambda s: html.escape(str(s), quote=True)

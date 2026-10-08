@@ -28,6 +28,11 @@ Callers pin commit SHAs; each entry names what changed for them.
   `scripts/lib/http.sh`), so the site's usage report counts them as our
   automation, not downloads. Tests: every curl to the site passes it, and
   the stand-in curl sees it on the wire.
+- The vendored page kit is RBA Web Site's `software-kit/` at `13071cc` (19
+  files, verified against Web Site's generated manifest): U-Stu Video
+  Editor's display data (tagline, pitch, its icon at 96 and 192 px) and a
+  `purple` accent. The real-kit test checks that every configured product
+  renders with its kit name (matching `display_name`), icon and accent.
 - The vendored page kit is RBA Web Site's `software-kit/` at `0060426` (17
   files, verified against Web Site's manifest): the footer gains X and
   GitHub links with inline SVG icons (`assets/social.html`, inlined by

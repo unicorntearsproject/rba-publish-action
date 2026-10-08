@@ -23,6 +23,8 @@ FIXTURE_FPR = "A" * 40  # stands in for a key that isn't pinned yet
 CONFS = {os.path.basename(p)[:-5]: rc.load_conf(p)
          for p in sorted(glob.glob(os.path.join(ROOT, "scripts", "products", "*.json")))}
 RESERVED = {"_kit", "keys", "catalog", "latest"}
+with open(os.path.join(ROOT, "vendor", "software-kit", "products.json"), encoding="utf-8") as _f:
+    KIT_PRODUCTS = json.load(_f)  # the vendored kit's display data
 
 
 def pending(conf):
@@ -208,6 +210,13 @@ class TwoProducts(unittest.TestCase):
                     html = f.read()
                 for meta in CONFS[p]["platforms"].values():
                     self.assertIn(meta["label"].replace("&", "&amp;"), html)
+                # Every product has the kit's display data: its name, icon and accent,
+                # not the fallback tile.
+                d = KIT_PRODUCTS[p]
+                self.assertEqual(d["name"], CONFS[p]["display_name"])
+                self.assertIn(f'class="product accent-{d["accent"]}"', html)
+                self.assertIn(f'/_kit/{d["icon"]}-96.', html)
+                self.assertNotIn("product-icon-blank", html)
 
     def test_a_product_without_releases_is_left_out(self):
         first = next(iter(CONFS))
