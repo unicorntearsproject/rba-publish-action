@@ -1,0 +1,51 @@
+{
+  "product": "u-studio-video-editor",
+  "display_name": "U-Stu Video Editor",
+  "key_file": "keys/u-studio-video-editor-release.asc",
+  "key_fingerprint": "PENDING-KEY-FINGERPRINT",
+  "key_url_path": "keys/u-studio-video-editor-release-PENDING.asc",
+  "manifest": "u-studio-video-editor-latest.json",
+  "checksums_file": "checksums",
+  "source_repo": "unicorntearsproject/u-studio-video-editor",
+  "files": {
+    "linux-flatpak": "u-studio-video-editor-{v}-linux-x86_64.flatpak",
+    "linux-flatpak-titles": "u-studio-video-editor-dropin-titles-{v}-linux-x86_64.flatpak",
+    "linux-flatpak-effects": "u-studio-video-editor-dropin-effects-{v}-linux-x86_64.flatpak",
+    "source": "u-studio-video-editor-{v}-source.tar.gz",
+    "checksums": "u-studio-video-editor-{v}-SHA256SUMS"
+  },
+  "aliases": {
+    "linux-flatpak": "u-studio-video-editor-latest-linux-x86_64.flatpak",
+    "linux-flatpak-titles": "u-studio-video-editor-dropin-titles-latest-linux-x86_64.flatpak",
+    "linux-flatpak-effects": "u-studio-video-editor-dropin-effects-latest-linux-x86_64.flatpak"
+  },
+  "platforms": {
+    "linux-flatpak": {
+      "os": "linux",
+      "kind": "package",
+      "label": "Flatpak"
+    },
+    "linux-flatpak-titles": {
+      "os": "linux",
+      "kind": "package",
+      "label": "Titles add-on (Flatpak)"
+    },
+    "linux-flatpak-effects": {
+      "os": "linux",
+      "kind": "package",
+      "label": "Effects add-on (Flatpak)"
+    },
+    "source": {
+      "os": "linux",
+      "kind": "package",
+      "label": "Source code (GPL corresponding source)"
+    }
+  },
+  "required_with": {
+    "source": [
+      "linux-flatpak",
+      "linux-flatpak-titles",
+      "linux-flatpak-effects"
+    ]
+  }
+}

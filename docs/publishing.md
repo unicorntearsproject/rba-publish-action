@@ -106,6 +106,21 @@ Nothing else: no `index.html`, no `-latest` files, no subdirectories.
    downstream verifies what it fetches itself. The run then still fails,
    so a person looks.
 
+## Products
+
+Each product is one config, `scripts/products/<id>.json`: its file names
+per platform (with `{v}`), platform labels, `latest/` aliases, manifest
+name, pinned key (`key_file`, the primary `key_fingerprint`,
+`key_url_path`), `source_repo` for the tag gate, and optionally `zsync`,
+`notify`, `build_info` and `required_with` (`{"<platform>": [<platforms>]}`:
+if any of those ships, that one must ship too, for example GPL
+corresponding source with bundled binaries). The scripts, the catalog, the
+pages and the tests (`tests/test_products.py`) work over every config.
+
+**Every publisher of every product uses the same pinned commit.** Each
+publish rebuilds the catalog and the pages from the configs in its own pin,
+so a publisher on an older pin would drop the products it doesn't know.
+
 ## In GitHub Actions
 
 See the [README](../README.md#use) for the inputs. The action:

@@ -149,6 +149,13 @@ def check_names(conf, release_dir, v):
         names = expected_files(conf, v)
         if (names[zs["target"]] in present) != (names[zs["control"]] in present):
             problems.append(f"{names[zs['target']]} and {names[zs['control']]} must be published together")
+    # required_with: {"<pid>": ["<pid>", ...]}: if any of those ships, <pid>
+    # must ship too (e.g. GPL corresponding source with bundled binaries).
+    names = expected_files(conf, v)
+    for need, deps in conf.get("required_with", {}).items():
+        shipped = [names[d] for d in deps if names[d] in present]
+        if shipped and names[need] not in present:
+            problems.append(f"{names[need]}: required with {', '.join(shipped)}")
     if problems:
         raise CheckError("file names:\n  " + "\n  ".join(problems))
     return sorted(n for n in present if n not in (manifest, manifest + ".asc"))
@@ -258,6 +265,9 @@ def check_manifest(conf, release_dir, v, base_url, live_manifest=None):
         live_v = live_manifest.get("version", "")
         if not SEMVER.match(live_v) or not semver_gt(v, live_v):
             problems.append(f"version {v} is not newer than the live {live_v!r}")
+    for need, deps in conf.get("required_with", {}).items():
+        if any(d in files for d in deps) and need not in files:
+            problems.append(f"files.{need}: required with {', '.join(d for d in deps if d in files)}")
     unknown = set(f["name"] for f in files.values() if isinstance(f, dict)) - allowed
     if unknown:
         problems.append(f"unknown names: {sorted(unknown)}")
