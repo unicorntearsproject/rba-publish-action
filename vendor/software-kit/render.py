@@ -121,7 +121,7 @@ def write_assets(out):
             with open(os.path.join(ASSETS, rel), "rb") as fh:
                 put(rel, fh.read())
     css = ""
-    for rel in ("colors.css", "spacing.css", "typography.css"):
+    for rel in ("rusty.css",):     # the Rusty theme's tokens (ADR-026)
         with open(os.path.join(ASSETS, rel), encoding="utf-8") as fh:
             css += fh.read()
     with open(os.path.join(KIT, "kit.css"), encoding="utf-8") as fh:
