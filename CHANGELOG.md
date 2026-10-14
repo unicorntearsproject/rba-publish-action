@@ -39,6 +39,12 @@ Callers pin commit SHAs; each entry names what changed for them.
   `scripts/lib/http.sh`), so the site's usage report counts them as our
   automation, not downloads. Tests: every curl to the site passes it, and
   the stand-in curl sees it on the wire.
+- The vendored page kit is RBA Web Site's `software-kit/` at `695143e` (19
+  files, verified against Web Site's generated manifest at `868c1ad`): the
+  site's nav bar (Home, Library, Art, Support Us, Software: same-tab links,
+  Software marked current) from the new `assets/nav.html`. A new real-kit
+  test checks the five links, that none opens a new tab, and the current
+  marker.
 - The vendored page kit is RBA Web Site's `software-kit/` at `d4f050d` (18
   files, verified against Web Site's generated manifest at `cb51b94`): the
   new Rusty look. Chakra Petch replaces Anton, and one `rusty.css`

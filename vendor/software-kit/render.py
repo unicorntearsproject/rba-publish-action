@@ -241,15 +241,12 @@ def page(title, description, body, urls, canonical):
 <meta name="description" content="{e(description)}">
 <link rel="canonical" href="{e(canonical)}">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#07060d">
+<meta name="theme-color" content="#00111a">
 <link rel="icon" href="{urls['emblem-80.webp']}" type="image/webp">
 {fonts}<link rel="stylesheet" href="{urls['kit.css']}">
 </head>
 <body>
-<header class="site-head">
-  <a class="brand" href="{HOME}"><img src="{urls['emblem-80.webp']}" width="40" height="40" alt=""> Rusty Bucket</a>
-  <a class="back" href="{HOME}">← rustybucket.ai</a>
-</header>
+{NAV.replace("{EMBLEM}", urls['emblem-80.webp'])}
 <main>
 {body}</main>
 <footer>
@@ -264,6 +261,8 @@ def page(title, description, body, urls, canonical):
 
 with open(os.path.join(ASSETS, "social.html"), encoding="utf-8") as _fh:
     SOCIAL = _fh.read()   # X and GitHub links with inline icons, shared with rustybucket.ai
+with open(os.path.join(ASSETS, "nav.html"), encoding="utf-8") as _fh:
+    NAV = _fh.read()      # rustybucket.ai's nav bar, "Software" current (ADR-027)
 
 INTRO = ("Every download, for every platform. Each file is signed and listed "
          "with its SHA-256, and older versions stay here.")

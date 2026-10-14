@@ -305,6 +305,17 @@ if (export FAKE_S3_DIR=$real PATH="$ROOT/tests/fake-aws:$PATH" PRODUCTS=$work/pr
      && grep -q 'href="https://github.com/unicorntearsproject"' "$real/index.html"; then
     ok "real kit: the X and GitHub links are in the footer"
   else nok "real kit: social links missing"; fi
+  # The nav bar (RBA Web Site's nav.html): the site's five sections, every
+  # one a same-tab link, Software marked as the current page.
+  nav_ok=1
+  for u in https://rustybucket.ai/ https://rustybucket.ai/library/ https://rustybucket.ai/art/ \
+           https://rustybucket.ai/support/ https://software.rustybucket.ai/; do
+    grep -q "class=\"nav-link\" href=\"$u\"" "$real/index.html" || nav_ok=0
+  done
+  grep -q 'href="https://software.rustybucket.ai/" aria-current="page"' "$real/rusty-wave/index.html" || nav_ok=0
+  grep -q 'target=' "$real/index.html" && nav_ok=0
+  if ((nav_ok)); then ok "real kit: the nav bar's five same-tab links, Software current"
+  else nok "real kit: nav bar missing or wrong"; fi
   others=$(grep -rhoE 'href="https?://[^"]+"' "$real" --include=index.html | sort -u \
     | grep -vE '^href="https://(software\.rustybucket\.ai|rustybucket\.ai|wave\.rustybucket\.ai)(/[^"]*)?"$' \
     | grep -vxE 'href="https://x\.com/rustybucketai"|href="https://github\.com/unicorntearsproject"' || true)
