@@ -111,7 +111,8 @@ Nothing else: no `index.html`, no `-latest` files, no subdirectories.
 Each product is one config, `scripts/products/<id>.json`: its file names
 per platform (with `{v}`), platform labels, `latest/` aliases, manifest
 name, pinned key (`key_file`, the primary `key_fingerprint`,
-`key_url_path`), `source_repo` for the tag gate, and optionally `zsync`,
+`key_url_path`), `source_repo` (required; `owner/name` on GitHub, for the tag gate and
+the catalog's `source_repo` and `source_url`), and optionally `zsync`,
 `notify`, `build_info` and `required_with` (`{"<platform>": [<platforms>]}`:
 if any of those ships, that one must ship too, for example GPL
 corresponding source with bundled binaries). The scripts, the catalog, the

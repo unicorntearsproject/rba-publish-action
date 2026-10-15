@@ -57,6 +57,27 @@ def make_release(conf, d, v, fpr):
     return manifest
 
 
+class SourceRepoRequired(unittest.TestCase):
+    def _load(self, **change):
+        conf = dict(CONFS["rusty-wave"])
+        conf.update(change)
+        conf = {k: v for k, v in conf.items() if v is not None}
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "p.json")
+            with open(path, "w") as f:
+                json.dump(conf, f)
+            return rc.load_conf(path)
+
+    def test_refused_without_or_with_a_bad_source_repo(self):
+        for bad in (None, "", "no-slash", "a/b/c", "https://github.com/a/b"):
+            with self.subTest(source_repo=bad):
+                with self.assertRaises(ValueError):
+                    self._load(source_repo=bad)
+
+    def test_accepted(self):
+        self.assertEqual(self._load()["source_repo"], CONFS["rusty-wave"]["source_repo"])
+
+
 class EveryConfig(unittest.TestCase):
     def test_ids_names_and_shape(self):
         seen = {}

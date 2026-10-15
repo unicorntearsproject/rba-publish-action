@@ -185,6 +185,11 @@ class CatalogTests(unittest.TestCase):
         with self.assertRaisesRegex(cat.CatalogError, "schema/product"):
             self.build(records=[alien, self.r5])
 
+    def test_product_links_its_source(self):
+        p = self.build()["products"][0]
+        self.assertEqual(p["source_repo"], CONF["source_repo"])
+        self.assertEqual(p["source_url"], "https://github.com/" + CONF["source_repo"])
+
     def test_nothing_published_lists_no_product(self):
         c = cat.build_catalog([CONF], {}, [], {}, BASE, "2026-10-07T12:00:00Z")
         self.assertEqual(c["products"], [])

@@ -7,6 +7,10 @@ Callers pin commit SHAs; each entry names what changed for them.
 
 ### Added
 
+- `source_repo` is required in every product config (`load_conf` refuses a
+  config without a valid `owner/name`), and each catalog product carries
+  `source_repo` and `source_url` (`https://github.com/<repo>`), so every
+  product on the downloads page can link its source. Additive; schema stays 1.
 - A second product, U-Stu Video Editor (`scripts/products/u-studio-video-editor.json`):
   three Flatpaks (the editor, titles and effects add-ons) and the GPL
   corresponding source, which `required_with` makes mandatory whenever a

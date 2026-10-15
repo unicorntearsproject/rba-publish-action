@@ -46,9 +46,17 @@ class CheckError(Exception):
     pass
 
 
+SOURCE_REPO = re.compile(r"^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$")
+
+
 def load_conf(path):
+    """A product config. source_repo (owner/name on GitHub) is required:
+    every published product links its source."""
     with open(path, encoding="utf-8") as f:
-        return json.load(f)
+        conf = json.load(f)
+    if not SOURCE_REPO.fullmatch(str(conf.get("source_repo", ""))):
+        raise ValueError(f"{path}: source_repo (owner/name on GitHub) is required")
+    return conf
 
 
 def normalize_version(raw):

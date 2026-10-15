@@ -151,6 +151,8 @@ def build_catalog(confs, records, listing, alias_sha256, base_url, generated, ke
         out["products"].append({
             "id": product,
             "name": conf["display_name"],
+            "source_repo": conf["source_repo"],
+            "source_url": f"https://github.com/{conf['source_repo']}",
             "key_fingerprint": conf["key_fingerprint"],
             "key_url": (key_urls or {}).get(product),
             "manifest_url": f"{base_url}/{product}/latest/{conf['manifest']}",
