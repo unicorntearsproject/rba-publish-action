@@ -39,6 +39,14 @@ Callers pin commit SHAs; each entry names what changed for them.
   `scripts/lib/http.sh`), so the site's usage report counts them as our
   automation, not downloads. Tests: every curl to the site passes it, and
   the stand-in curl sees it on the wire.
+- The vendored page kit is RBA Web Site's `software-kit/` at `2f0d60a` (19
+  files, verified against Web Site's generated manifest at `7fff57e`): the
+  nav is Home, then Art, Library, Press, Software and Support Us. The
+  real-kit test checks all six links in that order.
+- The log-masking check (test 22) treats a 12-digit account ID as a leak
+  only when it stands alone, the same rule as `scan_repo.sh`. A throwaway
+  key's fingerprint with 12 digits in a row failed the suite in about 1 run
+  in 8. New regression test.
 - The repository scan (`tests/scan_repo.sh`) reads the tested commit's
   history (`HEAD`), not every branch. Dependabot's PR branches carry
   GitHub's own committer and sign-off addresses, which failed CI for every

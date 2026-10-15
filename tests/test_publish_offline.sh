@@ -305,16 +305,15 @@ if (export FAKE_S3_DIR=$real PATH="$ROOT/tests/fake-aws:$PATH" PRODUCTS=$work/pr
      && grep -q 'href="https://github.com/orgs/Rusty-Bucket-AI-OS/"' "$real/index.html"; then
     ok "real kit: the X and GitHub links are in the footer"
   else nok "real kit: social links missing"; fi
-  # The nav bar (RBA Web Site's nav.html): the site's five sections, every
-  # one a same-tab link, Software marked as the current page.
+  # The nav bar (RBA Web Site's nav.html): Home, then the site's sections in
+  # alphabetical order, every one a same-tab link, Software marked current.
   nav_ok=1
-  for u in https://rustybucket.ai/ https://rustybucket.ai/library/ https://rustybucket.ai/art/ \
-           https://rustybucket.ai/support/ https://software.rustybucket.ai/; do
-    grep -q "class=\"nav-link\" href=\"$u\"" "$real/index.html" || nav_ok=0
-  done
+  want="https://rustybucket.ai/ https://rustybucket.ai/art/ https://rustybucket.ai/library/ https://rustybucket.ai/press/ https://software.rustybucket.ai/ https://rustybucket.ai/support/"
+  got=$(grep -oE 'class="nav-link" href="[^"]+"' "$real/index.html" | sed -E 's/.*href="([^"]+)"/\1/' | tr '\n' ' ' | sed 's/ $//')
+  [[ $got == "$want" ]] || nav_ok=0
   grep -q 'href="https://software.rustybucket.ai/" aria-current="page"' "$real/rusty-wave/index.html" || nav_ok=0
   grep -q 'target=' "$real/index.html" && nav_ok=0
-  if ((nav_ok)); then ok "real kit: the nav bar's five same-tab links, Software current"
+  if ((nav_ok)); then ok "real kit: the nav bar's six same-tab links in order, Software current"
   else nok "real kit: nav bar missing or wrong"; fi
   others=$(grep -rhoE 'href="https?://[^"]+"' "$real" --include=index.html | sort -u \
     | grep -vE '^href="https://(software\.rustybucket\.ai|rustybucket\.ai|wave\.rustybucket\.ai)(/[^"]*)?"$' \
@@ -507,11 +506,20 @@ for line in sys.stdin:
         line = line.replace(m, "***")
     print(line)'
 }
-leaks() { # log: print each forbidden thing found
-  grep -nE '(^|[^0-9])[0-9]{12}([^0-9]|$)' "$1" || true
+leaks() { # log: print each forbidden thing found. A 12-digit account ID
+  # stands alone; a run of 12 digits inside a hex string (a throwaway key's
+  # fingerprint, a hash) is not one (the same boundary as scan_repo.sh).
+  grep -nE '(^|[^0-9A-Za-z])[0-9]{12}([^0-9A-Za-z]|$)' "$1" || true
   grep -nE 'arn:aws[a-z-]*:[a-z0-9-]*:[a-z0-9-]*:[0-9]' "$1" || true
   grep -nFf "$work/forbidden" "$1" || true
 }
+# The check itself: a fingerprint with 12 digits in a row isn't a leak (it
+# made this suite fail about 1 run in 8, by chance); an account ID is.
+printf 'publish: signatures ok (3AD7479D71729BD4FDF186F809944172896C58BE)\n' >"$work/leak-fpr.log"
+printf 'role arn:aws:iam::%s:role/x\naccount %s.\n' "$acct" "$acct" >"$work/leak-acct.log"
+if [[ -z $(leaks "$work/leak-fpr.log") && $(leaks "$work/leak-acct.log" | grep -c .) -ge 2 ]]; then
+  ok "masking check: a fingerprint's digit run isn't a leak; an account ID is"
+else nok "masking check: wrong on a fingerprint or an account ID"; fi
 job() { # name, then the job's commands as a function: run, mask, check
   local name=$1; shift
   (export FAKE_S3_DIR=$work/mask-bucket FAKE_ACCOUNT=$acct FAKE_BUCKET=$mbucket FAKE_CALLER_ARN=$caller
