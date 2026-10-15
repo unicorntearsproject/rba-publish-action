@@ -4,7 +4,7 @@
 
 | Path | What | Source | Pinned by |
 | --- | --- | --- | --- |
-| `software-kit/` | The page kit for `software.rustybucket.ai` (`render.py`, CSS, fonts, icons, the nav bar, the footer's X and GitHub links, licences; Rusty Wave and U-Stu Video Editor display data), by RBA Web Site, which owns it | RBA Web Site's `software-kit/` at `695143ee33106991284c5341c532142926d8cff9` (19 files) | `software-kit.sha256`, Web Site's generated vendoring manifest |
+| `software-kit/` | The page kit for `software.rustybucket.ai` (`render.py`, CSS, fonts, icons, the nav bar, the footer's X and GitHub links, licences; Rusty Wave and U-Stu Video Editor display data), by RBA Web Site, which owns it | RBA Web Site's `software-kit/` at `1ee3aa060f73fdc4b921933019c04b7b2ae86ad3` (19 files) | `software-kit.sha256`, Web Site's generated vendoring manifest |
 
 Never edit these files. Changes come as a new kit commit from RBA Web Site.
 They are re-vendored, re-verified (`cd vendor && sha256sum -c software-kit.sha256`)

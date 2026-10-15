@@ -302,7 +302,7 @@ if (export FAKE_S3_DIR=$real PATH="$ROOT/tests/fake-aws:$PATH" PRODUCTS=$work/pr
   # The footer's social links (RBA Web Site's social.html): both present, and
   # every external link on the rendered pages is on this list, nothing else.
   if grep -q 'href="https://x.com/rustybucketai"' "$real/index.html" \
-     && grep -q 'href="https://github.com/unicorntearsproject"' "$real/index.html"; then
+     && grep -q 'href="https://github.com/orgs/Rusty-Bucket-AI-OS/"' "$real/index.html"; then
     ok "real kit: the X and GitHub links are in the footer"
   else nok "real kit: social links missing"; fi
   # The nav bar (RBA Web Site's nav.html): the site's five sections, every
@@ -318,7 +318,7 @@ if (export FAKE_S3_DIR=$real PATH="$ROOT/tests/fake-aws:$PATH" PRODUCTS=$work/pr
   else nok "real kit: nav bar missing or wrong"; fi
   others=$(grep -rhoE 'href="https?://[^"]+"' "$real" --include=index.html | sort -u \
     | grep -vE '^href="https://(software\.rustybucket\.ai|rustybucket\.ai|wave\.rustybucket\.ai)(/[^"]*)?"$' \
-    | grep -vxE 'href="https://x\.com/rustybucketai"|href="https://github\.com/unicorntearsproject"' || true)
+    | grep -vxE 'href="https://x\.com/rustybucketai"|href="https://github\.com/orgs/Rusty-Bucket-AI-OS/"' || true)
   if [[ -z $others ]]; then ok "real kit: no external links beyond our sites, X and GitHub"
   else nok "real kit: unexpected external links"; echo "$others"; fi
 else nok "real kit render_site failed"; cat "$work/out"; fi

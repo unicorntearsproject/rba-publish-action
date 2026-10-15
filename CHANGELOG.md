@@ -39,6 +39,10 @@ Callers pin commit SHAs; each entry names what changed for them.
   `scripts/lib/http.sh`), so the site's usage report counts them as our
   automation, not downloads. Tests: every curl to the site passes it, and
   the stand-in curl sees it on the wire.
+- The vendored page kit is RBA Web Site's `software-kit/` at `1ee3aa0` (19
+  files, verified against Web Site's generated manifest at `1ed95ee`): the
+  footer's GitHub link is now the organisation,
+  `github.com/orgs/Rusty-Bucket-AI-OS/`, and the real-kit test expects it.
 - The vendored page kit is RBA Web Site's `software-kit/` at `695143e` (19
   files, verified against Web Site's generated manifest at `868c1ad`): the
   site's nav bar (Home, Library, Art, Support Us, Software: same-tab links,
