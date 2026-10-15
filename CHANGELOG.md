@@ -39,6 +39,10 @@ Callers pin commit SHAs; each entry names what changed for them.
   `scripts/lib/http.sh`), so the site's usage report counts them as our
   automation, not downloads. Tests: every curl to the site passes it, and
   the stand-in curl sees it on the wire.
+- The vendored page kit is RBA Web Site's `software-kit/` at `92319bc` (19
+  files, verified against Web Site's generated manifest at `53b89fa`): the
+  nav is Home, Art, BucketFS, Hardware, Library, Press, Process, Software
+  and Support Us. The real-kit test checks all nine links in that order.
 - The vendored page kit is RBA Web Site's `software-kit/` at `2f0d60a` (19
   files, verified against Web Site's generated manifest at `7fff57e`): the
   nav is Home, then Art, Library, Press, Software and Support Us. The
