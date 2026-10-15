@@ -750,7 +750,7 @@ scanrepo=$work/scanrepo
 mkdir -p "$scanrepo/tests" && cp "$ROOT/tests/scan_repo.sh" "$scanrepo/tests/"
 sgit() { git -C "$scanrepo" -c commit.gpgsign=false -c core.hooksPath=/dev/null "$@"; }
 us=(GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=1+t@users.noreply.github.com GIT_COMMITTER_NAME=t GIT_COMMITTER_EMAIL=1+t@users.noreply.github.com)
-bot=(GIT_AUTHOR_NAME=bot GIT_AUTHOR_EMAIL=1+bot@users.noreply.github.com GIT_COMMITTER_NAME=GitHub GIT_COMMITTER_EMAIL=noreply@$gh_dom)
+bot=(GIT_AUTHOR_NAME=bot GIT_AUTHOR_EMAIL=1+bot@users.noreply.github.com GIT_COMMITTER_NAME=GitHub "GIT_COMMITTER_EMAIL=noreply@$gh_dom")
 sgit init -q -b main && echo "clean" >"$scanrepo/README" && sgit add -A
 env "${us[@]}" git -C "$scanrepo" -c commit.gpgsign=false commit -q -m "first"
 sgit checkout -q -b bot-branch && echo "bump" >>"$scanrepo/README" && sgit add -A
