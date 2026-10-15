@@ -39,6 +39,14 @@ Callers pin commit SHAs; each entry names what changed for them.
   `scripts/lib/http.sh`), so the site's usage report counts them as our
   automation, not downloads. Tests: every curl to the site passes it, and
   the stand-in curl sees it on the wire.
+- The repository scan (`tests/scan_repo.sh`) reads the tested commit's
+  history (`HEAD`), not every branch. Dependabot's PR branches carry
+  GitHub's own committer and sign-off addresses, which failed CI for every
+  push while a bot PR was open. New test 29: a bot's side branch passes,
+  and the same identity on `HEAD` still fails.
+- The action uses `actions/download-artifact` v8.0.2, pinned by SHA
+  (`9000827…`; better retries on HTTP 429, `@actions/artifact` 6.3.1). This
+  folds in Dependabot's PR #1.
 - The vendored page kit is RBA Web Site's `software-kit/` at `1ee3aa0` (19
   files, verified against Web Site's generated manifest at `1ed95ee`): the
   footer's GitHub link is now the organisation,

@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Generic scan for anything identifying or secret in this public repository:
-# every file (tracked and untracked, text only) and every commit's metadata.
+# every file (tracked and untracked, text only) and the metadata of every
+# commit in the tested commit's history (HEAD), not other branches: only main
+# is ever pinned, and bots' PR branches (Dependabot) carry GitHub's own
+# addresses.
 # Fails on: a 12-digit number (an AWS account ID), an ARN with an account in
 # it, AWS access key IDs, private keys, GitHub tokens, home-directory paths,
 # and e-mail addresses other than no-reply ones. Real deployment values are
@@ -35,9 +38,9 @@ mails=$(xargs -d '\n' grep -ohIE '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}
 # Commit metadata: authors and committers use the no-reply address; messages
 # get the same pattern scan.
 if git rev-parse -q --verify HEAD >/dev/null; then
-  bad=$(git log --all --format='%ae%n%ce' | sort -u | grep -vE "$allowed_mail" || true)
+  bad=$(git log HEAD --format='%ae%n%ce' | sort -u | grep -vE "$allowed_mail" || true)
   [[ -z $bad ]] || { echo "scan: commit identities that aren't no-reply:"; echo "$bad"; fail=1; }
-  msgs=$(git log --all --format='%B')
+  msgs=$(git log HEAD --format='%B')
   for p in "${patterns[@]}"; do
     if grep -nE -- "$p" <<<"$msgs"; then echo "scan: forbidden pattern /$p/ in a commit message"; fail=1; fi
   done

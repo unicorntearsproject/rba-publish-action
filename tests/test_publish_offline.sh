@@ -732,5 +732,27 @@ if [[ $(grep -c . "$work/curl-ua.log") -ge 2 ]] && ! grep -vxq 'ua=rba-publish-v
   ok "the live-manifest fetch and the length check send rba-publish-verify/1"
 else nok "a request went without the marker"; cat "$work/curl-ua.log"; fi
 
+# 29. The repository scan reads the tested commit's history only: a bot's
+# side branch (GitHub's own no-reply committer address and a GitHub support
+# sign-off) doesn't fail it, but the same identity on HEAD does. The
+# addresses are built at run time, so this file doesn't hold them (the scan
+# of this repository would fail on them).
+gh_dom=github; gh_dom+=.com
+scanrepo=$work/scanrepo
+mkdir -p "$scanrepo/tests" && cp "$ROOT/tests/scan_repo.sh" "$scanrepo/tests/"
+sgit() { git -C "$scanrepo" -c commit.gpgsign=false -c core.hooksPath=/dev/null "$@"; }
+us=(GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=1+t@users.noreply.github.com GIT_COMMITTER_NAME=t GIT_COMMITTER_EMAIL=1+t@users.noreply.github.com)
+bot=(GIT_AUTHOR_NAME=bot GIT_AUTHOR_EMAIL=1+bot@users.noreply.github.com GIT_COMMITTER_NAME=GitHub GIT_COMMITTER_EMAIL=noreply@$gh_dom)
+sgit init -q -b main && echo "clean" >"$scanrepo/README" && sgit add -A
+env "${us[@]}" git -C "$scanrepo" -c commit.gpgsign=false commit -q -m "first"
+sgit checkout -q -b bot-branch && echo "bump" >>"$scanrepo/README" && sgit add -A
+env "${bot[@]}" git -C "$scanrepo" -c commit.gpgsign=false commit -q -m "$(printf 'bump\n\nSigned-off-by: bot <support@%s>' "$gh_dom")"
+sgit checkout -q main
+if "$scanrepo/tests/scan_repo.sh" >"$work/out" 2>&1; then ok "scan: a bot's side branch doesn't fail the scan of HEAD"
+else nok "scan: a side branch failed the scan"; cat "$work/out"; fi
+sgit merge -q --ff-only bot-branch
+if "$scanrepo/tests/scan_repo.sh" >"$work/out" 2>&1; then nok "scan: a bot identity on HEAD passed"
+else expect "noreply@$gh_dom" "scan: the same identity on HEAD fails it"; fi
+
 echo "publish offline: $pass passed, $failed failed"
 ((failed == 0))
