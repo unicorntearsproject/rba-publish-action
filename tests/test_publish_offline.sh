@@ -296,7 +296,7 @@ if (export FAKE_S3_DIR=$real PATH="$ROOT/tests/fake-aws:$PATH" PRODUCTS=$work/pr
   css=$(cd "$real" && find _kit -name 'kit.*.css')
   if [[ -n $css && -f $real/index.html && -f $real/rusty-wave/index.html ]] \
      && grep -q "href=\"/$css\"" "$real/rusty-wave/1.0.0-rc1/index.html" \
-     && ! grep -lq -e '<style' -e '<script' -e ' style=' "$real/index.html" "$real/rusty-wave/index.html"; then
+     && ! grep -lqP -e '<style' -e '<script(?![^>]*\ssrc=)' -e ' style=' "$real/index.html" "$real/rusty-wave/index.html"; then
     ok "real kit: pages, fingerprinted assets, folder pages on its CSS, no inline style or script"
   else nok "real kit render"; (cd "$real" && find . -type f | sort | sed -n "1,30p"); fi
   # The footer's social links (RBA Web Site's social.html): both present, and
@@ -315,10 +315,15 @@ if (export FAKE_S3_DIR=$real PATH="$ROOT/tests/fake-aws:$PATH" PRODUCTS=$work/pr
   grep -q 'target=' "$real/index.html" && nav_ok=0
   if ((nav_ok)); then ok "real kit: the nav bar's nine same-tab links in order, Software current"
   else nok "real kit: nav bar missing or wrong"; fi
+  # The product's source link (catalog source_url) under the platforms.
+  if grep -q 'href="https://github.com/unicorntearsproject/rusty-media-player"' "$real/index.html" \
+     && grep -q 'Source code: fully audited &amp; tested by AI\|Source code: fully audited & tested by AI' "$real/index.html"; then
+    ok "real kit: each product links its GitHub source with the audited note"
+  else nok "real kit: source link missing"; fi
   others=$(grep -rhoE 'href="https?://[^"]+"' "$real" --include=index.html | sort -u \
     | grep -vE '^href="https://(software\.rustybucket\.ai|rustybucket\.ai|wave\.rustybucket\.ai)(/[^"]*)?"$' \
-    | grep -vxE 'href="https://x\.com/rustybucketai"|href="https://github\.com/orgs/Rusty-Bucket-AI-OS/"' || true)
-  if [[ -z $others ]]; then ok "real kit: no external links beyond our sites, X and GitHub"
+    | grep -vxE 'href="https://x\.com/rustybucketai"|href="https://github\.com/orgs/Rusty-Bucket-AI-OS/"|href="https://github\.com/unicorntearsproject/[A-Za-z0-9._-]+"' || true)
+  if [[ -z $others ]]; then ok "real kit: no external links beyond our sites, X, GitHub and product sources"
   else nok "real kit: unexpected external links"; echo "$others"; fi
 else nok "real kit render_site failed"; cat "$work/out"; fi
 

@@ -294,3 +294,6 @@ summary { color: var(--accent-text, var(--accent)); cursor: pointer; font-weight
   *, *::before, *::after { transition: none !important; animation: none !important; }
   .dl:hover { transform: none; }
 }
+
+/* The source-code link under the macOS column (the user's rule, 2026-10-15) */
+.platform .source { margin: var(--space-3, 0.75rem) 0 0; font-size: 0.9rem; }

@@ -1,0 +1,36 @@
+
+/* Corporate mode on the software site (ADR-039): the shared theme (assets/corporate.css)
+   remaps the tokens; these rules flatten the kit's own plates, buttons and code. */
+html[data-mode="corporate"] body { background: #ffffff; color: var(--text-body); font-size: 1.0625rem; }
+html[data-mode="corporate"] body::before { display: none; }
+html[data-mode="corporate"] .site-nav { background: #ffffff; -webkit-backdrop-filter: none; backdrop-filter: none; border-bottom: 2px solid #1b1b1b; }
+html[data-mode="corporate"] .nav-brand, html[data-mode="corporate"] .nav-link { color: var(--text-strong); }
+html[data-mode="corporate"] .nav-link:hover { background: var(--bg-hover); }
+html[data-mode="corporate"] .nav-link[aria-current="page"] { box-shadow: inset 0 -3px 0 var(--accent-primary); }
+html[data-mode="corporate"] .mode-toggle { color: var(--text-body); }
+html[data-mode="corporate"] .nav-links { -webkit-mask-image: none; mask-image: none; }
+html[data-mode="corporate"] *, html[data-mode="corporate"] *::before, html[data-mode="corporate"] *::after { animation: none !important; transition: none !important; }
+html[data-mode="corporate"] h1, html[data-mode="corporate"] h2, html[data-mode="corporate"] h3, html[data-mode="corporate"] h4 { font-family: var(--font-display); letter-spacing: 0; color: var(--text-strong); }
+html[data-mode="corporate"] a { color: var(--accent-primary); }
+html[data-mode="corporate"] a:hover { color: var(--accent-primary-hover); }
+html[data-mode="corporate"] .page-title::after, html[data-mode="corporate"] .divider { box-shadow: none; background: var(--accent-primary); }
+
+/* Every product accent becomes the one navy */
+html[data-mode="corporate"] .accent-violet, html[data-mode="corporate"] .accent-magenta, html[data-mode="corporate"] .accent-cyan,
+html[data-mode="corporate"] .accent-rust, html[data-mode="corporate"] .accent-lime, html[data-mode="corporate"] .accent-purple {
+  --accent: #1a4480; --accent-text: #1a4480; --accent-glow: none;
+}
+html[data-mode="corporate"] .product { background: #ffffff; border: 1px solid var(--border-default); border-radius: 0; box-shadow: none; }
+html[data-mode="corporate"] .product::before, html[data-mode="corporate"] .product::after { display: none; }
+html[data-mode="corporate"] .product-icon { filter: none; }
+html[data-mode="corporate"] .product-icon-blank { background: var(--bg-raised); box-shadow: inset 0 0 0 1px var(--border-default); border-radius: 0; }
+html[data-mode="corporate"] .product-name, html[data-mode="corporate"] .product-name a { color: var(--text-strong); text-shadow: none; }
+html[data-mode="corporate"] .badge { background: #ffffff; color: var(--text-strong); border: 1px solid var(--border-control); box-shadow: none; }
+html[data-mode="corporate"] .platform h4::after { background: var(--border-default); }
+html[data-mode="corporate"] .dl { background: var(--bg-raised); border: 1px solid var(--border-default); border-radius: 0; box-shadow: none; color: var(--text-strong); }
+html[data-mode="corporate"] .dl:hover { background: var(--accent-primary-soft); border-color: var(--accent-primary); box-shadow: none; transform: none; }
+html[data-mode="corporate"] .dl-label { color: var(--accent-primary); }
+html[data-mode="corporate"] .cmd { background: var(--bg-raised); border: 1px solid var(--border-default); border-radius: 0; box-shadow: none; color: var(--text-strong); }
+html[data-mode="corporate"] details, html[data-mode="corporate"] .version table { border-color: var(--border-default); }
+html[data-mode="corporate"] .sha, html[data-mode="corporate"] .fpr { color: var(--text-secondary); }
+html[data-mode="corporate"] footer p, html[data-mode="corporate"] footer a { color: var(--text-secondary); }

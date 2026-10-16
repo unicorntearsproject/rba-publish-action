@@ -7,6 +7,12 @@ Callers pin commit SHAs; each entry names what changed for them.
 
 ### Added
 
+- Page kit re-vendored at website-primary `32cf021` (manifest `123a990`, 24 files):
+  the Corporate mode switch and theme (one first-party script, `mode.js`,
+  so the site's CSP needs `script-src 'self'`) and each product's
+  "Source code: fully audited & tested by AI" link, from the catalog's
+  `source_url`. The offline suite checks the link and allows only
+  `src=` scripts. See [vendor](vendor/README.md).
 - `source_repo` is required in every product config (`load_conf` refuses a
   config without a valid `owner/name`), and each catalog product carries
   `source_repo` and `source_url` (`https://github.com/<repo>`), so every

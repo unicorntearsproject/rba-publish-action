@@ -7,9 +7,10 @@ page kit, vendored into rba-infra at a pinned commit).
 Writes OUT_DIR/index.html (every product), OUT_DIR/<product>/index.html (one
 product each) and OUT_DIR/_kit/ (CSS, fonts, icons, licences, all fingerprinted
 as name.<hash>.ext, so a publish only ever adds new keys). Python 3 stdlib only;
-no JavaScript in the output; every asset is same-origin. The page needs:
+no inline JavaScript (one first-party script, mode.js, for Corporate mode, ADR-039);
+every asset is same-origin. The page needs:
 
-  Content-Security-Policy: default-src 'none'; img-src 'self'; style-src 'self';
+  Content-Security-Policy: default-src 'none'; script-src 'self'; img-src 'self'; style-src 'self';
     font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none';
     upgrade-insecure-requests
 
@@ -48,6 +49,22 @@ def check_url(url, where):
     return url
 
 
+SOURCE_URL = re.compile(r"https://github\.com/([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)")
+
+
+def check_source(p):
+    """A product's source link (the user's rule, 2026-10-15): a GitHub repo URL, and
+    the same repo as source_repo when the catalog gives both. Absent is allowed."""
+    url, repo = p.get("source_url"), p.get("source_repo")
+    if url is None and repo is None:
+        return
+    m = SOURCE_URL.fullmatch(url) if isinstance(url, str) else None
+    if not m:
+        raise CatalogError(f"{p['id']}: source_url must be https://github.com/OWNER/REPO")
+    if repo is not None and repo != m.group(1):
+        raise CatalogError(f"{p['id']}: source_url doesn't match source_repo")
+
+
 def check(catalog):
     """Refuse a catalog the page can't render safely (raises CatalogError)."""
     if catalog.get("schema") != 1:
@@ -60,6 +77,7 @@ def check(catalog):
         if not HEX[40].match(p.get("key_fingerprint", "")):
             raise CatalogError(f"{p['id']}: bad key fingerprint")
         check_url(p.get("key_url"), f"{p['id']} key_url")
+        check_source(p)
         versions = p.get("versions") or []
         if not versions or versions[0]["version"] != p.get("latest_version"):
             raise CatalogError(f"{p['id']}: versions[0] must be latest_version")
@@ -126,6 +144,11 @@ def write_assets(out):
             css += fh.read()
     with open(os.path.join(KIT, "kit.css"), encoding="utf-8") as fh:
         css += fh.read()
+    # Corporate mode (ADR-039): the shared theme, then the kit's own overrides
+    with open(os.path.join(ASSETS, "corporate.css"), encoding="utf-8") as fh:
+        css += fh.read()
+    with open(os.path.join(KIT, "kit-corporate.css"), encoding="utf-8") as fh:
+        css += fh.read()
     css = re.sub(r"url\(/_kit/([\w.-]+)\)", lambda m: f"url({urls[m.group(1)]})", css)
     put("kit.css", css.encode("utf-8"))
     return urls
@@ -161,20 +184,32 @@ def file_row(f, alias):
             f'</li>\n')
 
 
-def platforms(v, latest):
-    """The version's files grouped by OS, in OS_GROUPS order."""
+SOURCE_NOTE = "Source code: fully audited & tested by AI"
+
+
+def source_link(url):
+    """The product's source link, same tab (the user's rule, 2026-10-15)."""
+    return f'<p class="source"><a href="{e(url)}">{e(SOURCE_NOTE)}</a></p>\n' if url else ""
+
+
+def platforms(v, latest, source_url=None):
+    """The version's files grouped by OS, in OS_GROUPS order. The source link sits
+    under the macOS column, or under the last column when there is no macOS."""
+    groups = [(os_id, title, [f for f in v["files"] if f.get("os") == os_id]) for os_id, title in OS_GROUPS]
+    groups = [g for g in groups if g[2]]
+    home = next((g[0] for g in groups if g[0] == "macos"), groups[-1][0] if groups else None)
     out = '<div class="platforms">\n'
-    for os_id, title in OS_GROUPS:
-        files = [f for f in v["files"] if f.get("os") == os_id]
-        if not files:
-            continue
+    for os_id, title, files in groups:
         out += f'<div class="platform platform-{os_id}">\n<h4>{title}</h4>\n<ul class="files">\n'
         for f in files:
             alias = latest.get(f["platform_id"])
             if alias and alias.get("version") != v["version"]:
                 alias = None  # that alias serves another version
             out += file_row(f, alias)
-        out += "</ul>\n</div>\n"
+        out += "</ul>\n"
+        if os_id == home:
+            out += source_link(source_url)
+        out += "</div>\n"
     return out + "</div>\n"
 
 
@@ -225,7 +260,7 @@ def product(p, products, urls, level):
             f'{pitch}'
             f'<h3 class="current">Version {e(cur["version"])} {badge(cur)}'
             f'<span class="released">{day(cur.get("released"))}</span></h3>\n'
-            f'{platforms(cur, p.get("latest") or {})}'
+            f'{platforms(cur, p.get("latest") or {}, p.get("source_url"))}'
             f'{verify(p, cur)}{previous(p)}</section>\n')
 
 
@@ -243,7 +278,8 @@ def page(title, description, body, urls, canonical):
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#00111a">
 <link rel="icon" href="{urls['emblem-80.webp']}" type="image/webp">
-{fonts}<link rel="stylesheet" href="{urls['kit.css']}">
+{fonts}<script src="{urls['mode.js']}"></script>
+<link rel="stylesheet" href="{urls['kit.css']}">
 </head>
 <body>
 {NAV.replace("{EMBLEM}", urls['emblem-80.webp'])}
