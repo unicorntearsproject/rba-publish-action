@@ -5,6 +5,13 @@ Callers pin commit SHAs; each entry names what changed for them.
 
 ## [Unreleased]
 
+### Fixed
+
+- Kit upload: `_kit/*.js` now gets `Content-Type: text/javascript` (the Corporate
+  mode script was uploaded with none, which `nosniff` refuses to run), and an
+  unknown extension now stops the upload instead of being swallowed in a
+  command substitution. Tests added.
+
 ### Added
 
 - Page kit re-vendored at website-primary `32cf021` (manifest `123a990`, 24 files):

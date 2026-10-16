@@ -299,6 +299,20 @@ if (export FAKE_S3_DIR=$real PATH="$ROOT/tests/fake-aws:$PATH" PRODUCTS=$work/pr
      && ! grep -lqP -e '<style' -e '<script(?![^>]*\ssrc=)' -e ' style=' "$real/index.html" "$real/rusty-wave/index.html"; then
     ok "real kit: pages, fingerprinted assets, folder pages on its CSS, no inline style or script"
   else nok "real kit render"; (cd "$real" && find . -type f | sort | sed -n "1,30p"); fi
+  # Every uploaded kit file has a Content-Type (nosniff: a script without
+  # one doesn't run), and an unknown extension stops the upload.
+  ct_bad=0
+  while IFS= read -r f; do
+    ( die() { echo "die: $*" >&2; exit 1; }; log() { :; }
+      source "$ROOT/scripts/lib/catalog.sh"; [[ -n $(kit_content_type "$f") ]] ) 2>/dev/null || { ct_bad=1; echo "no content type: $f"; }
+  done < <(cd "$real" && find _kit -type f | sort)
+  if ((ct_bad)); then nok "real kit: every _kit file has a content type"
+  else ok "real kit: every _kit file has a content type (the script is text/javascript)"; fi
+  ( die() { exit 1; }; log() { :; }; source "$ROOT/scripts/lib/catalog.sh"
+    [[ $(kit_content_type _kit/mode.0123456789.js) == text/javascript* ]] \
+      && ! kit_content_type _kit/x.0123456789.bin >/dev/null 2>&1 ) \
+    && ok "kit_content_type: .js is JavaScript, an unknown extension is refused" \
+    || nok "kit_content_type: .js / unknown extension"
   # The footer's social links (RBA Web Site's social.html): both present, and
   # every external link on the rendered pages is on this list, nothing else.
   if grep -q 'href="https://x.com/rustybucketai"' "$real/index.html" \

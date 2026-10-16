@@ -77,10 +77,11 @@ kit_content_type() {
   case $1 in
     *.html) echo 'text/html; charset=utf-8' ;;
     *.css) echo 'text/css; charset=utf-8' ;;
+    *.js) echo 'text/javascript; charset=utf-8' ;;
     *.woff2) echo 'font/woff2' ;;
     *.webp) echo 'image/webp' ;;
     *.txt) echo 'text/plain; charset=utf-8' ;;
-    *) die "kit: no content type for $1" ;;
+    *) echo "kit: no content type for $1" >&2; return 1 ;;
   esac
 }
 
@@ -90,7 +91,7 @@ kit_content_type() {
 # pages (replaced, short cache), then our version and latest/ folder
 # pages, which link the kit's stylesheet (the CSP allows no inline style).
 render_site() {
-  local catalog=$1 out f key css have want
+  local catalog=$1 out f key css have want ctype
   out=$(mktemp -d "$work/site-XXXX") || die "can't create a scratch directory"
   if [[ $KIT_DIR == "$ROOT/vendor/software-kit" ]]; then
     # The vendored kit must be byte for byte the pinned one (Web Site's manifest).
@@ -108,10 +109,11 @@ render_site() {
   [[ -f $out/kit/index.html ]] || die "the page kit wrote no index.html"
   while IFS= read -r f; do
     key=${f#"$out/kit/"}
+    ctype=$(kit_content_type "$key") || die "kit asset $key has no known content type"
     [[ $key =~ ^_kit/[A-Za-z0-9._-]+\.[0-9a-f]{10}\.[a-z0-9]+$ ]] || die "kit asset $key isn't fingerprinted"
     want=$(openssl dgst -sha256 -binary "$f" | base64)
     if ! aws s3api put-object --bucket "$BUCKET" --region "$REGION" --key "$key" --body "$f" --if-none-match '*' \
-        --checksum-sha256 "$want" --content-type "$(kit_content_type "$key")" \
+        --checksum-sha256 "$want" --content-type "$ctype" \
         --cache-control 'public, max-age=31536000, immutable' >/dev/null 2>"$out/err"; then
       grep -q PreconditionFailed "$out/err" || die "can't create $key: $(cat "$out/err")"
       have=$(aws s3api head-object --bucket "$BUCKET" --region "$REGION" --key "$key" --checksum-mode ENABLED \
