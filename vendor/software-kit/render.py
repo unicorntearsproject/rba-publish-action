@@ -322,6 +322,8 @@ def render(catalog, out, products=None):
         with open(os.path.join(KIT, "products.json"), encoding="utf-8") as fh:
             products = json.load(fh)
     urls = write_assets(out)
+    # Every list on the page is alphabetical (the user's rule, 2026-10-16)
+    catalog = dict(catalog, products=sorted(catalog["products"], key=lambda p: p["name"].casefold()))
     sections = "".join(product(p, products, urls, 2) for p in catalog["products"])
     body = (f'<h1 class="page-title">Software</h1>\n<p class="intro">{e(INTRO)}</p>\n{sections}')
     written = [os.path.join(out, "index.html")]

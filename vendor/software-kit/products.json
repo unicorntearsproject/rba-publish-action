@@ -71,5 +71,12 @@
   "pitch": "Cut livestreams, podcasts and promos on Linux: sync mic and camera by their sound, edit with single keys, add animated titles, effects and transitions, and export an MP4 ready to upload. No account, no network access, and it never touches your original files.",
   "icon": "u-stu-icon",
   "accent": "purple"
+ },
+ "unicorn-cloak": {
+  "name": "Unicorn Cloak",
+  "tagline": "A mic-reactive avatar overlay for your stream.",
+  "pitch": "A from-scratch replacement for PNGTuber-Plus: layered sprites that move with your voice, in a transparent window that OBS captures as a source, with a control panel for building the rig, tuning motion and audio, and going live.",
+  "icon": "",
+  "accent": "cyan"
  }
 }

@@ -662,13 +662,15 @@ else nok "verification failure: the run stops before notifying"; fi
 
 # 25. Every product's REAL pinned key against a REAL signature by it
 # (tests/fixtures/), checked by publish-release.sh's own verify_sig: Rusty
-# Wave's rc5 SHA256SUMS and U-Stu's signed tag v0.80.2-beta.1 (the git tag
-# object, as GitHub returns it), both by the release subkey. Catches a pinned
+# Wave's rc5 SHA256SUMS, U-Stu's signed tag v0.80.2-beta.1 (the git tag
+# object, as GitHub returns it) and Unicorn Cloak's 0.9.0 SHA256SUMS, all by
+# the release subkey. Catches a pinned
 # key that no longer verifies its releases (a wrong export, a lost subkey or
 # cross-signature). Every product config needs an entry here.
 declare -A REAL_SIGNED=(
   [rusty-wave]=rusty-wave-1.0.0-rc5-SHA256SUMS
   [u-studio-video-editor]=u-studio-video-editor-v0.80.2-beta.1.tag
+  [unicorn-cloak]=unicorn-cloak-0.9.0-SHA256SUMS
 )
 for conf in "$ROOT"/scripts/products/*.json; do
   prod=$(basename "$conf" .json)

@@ -231,13 +231,16 @@ class TwoProducts(unittest.TestCase):
                     html = f.read()
                 for meta in CONFS[p]["platforms"].values():
                     self.assertIn(meta["label"].replace("&", "&amp;"), html)
-                # Every product has the kit's display data: its name, icon and accent,
-                # not the fallback tile.
+                # Every product has the kit's display data: its name, accent and, where
+                # the kit gives one, its icon.
                 d = KIT_PRODUCTS[p]
                 self.assertEqual(d["name"], CONFS[p]["display_name"])
                 self.assertIn(f'class="product accent-{d["accent"]}"', html)
-                self.assertIn(f'/_kit/{d["icon"]}-96.', html)
-                self.assertNotIn("product-icon-blank", html)
+                if d["icon"]:
+                    self.assertIn(f'/_kit/{d["icon"]}-96.', html)
+                    self.assertNotIn("product-icon-blank", html)
+                else:  # the kit's own choice (Unicorn Cloak has no icon yet)
+                    self.assertIn("product-icon-blank", html)
 
     def test_a_product_without_releases_is_left_out(self):
         first = next(iter(CONFS))

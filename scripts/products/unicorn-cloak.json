@@ -1,0 +1,31 @@
+{
+  "product": "unicorn-cloak",
+  "display_name": "Unicorn Cloak",
+  "key_file": "keys/unicorn-cloak-release.asc",
+  "key_fingerprint": "4154395F0B15753D98222C5C14A374112879B68E",
+  "key_url_path": "keys/unicorn-cloak-release-4154395F-a7989152.asc",
+  "manifest": "unicorn-cloak-latest.json",
+  "checksums_file": "checksums",
+  "source_repo": "unicorntearsproject/unicorn-cloak",
+  "files": {
+    "linux-appimage": "unicorn-cloak-{v}-linux-x86_64.AppImage",
+    "windows-exe": "unicorn-cloak-{v}-windows-x64.exe",
+    "checksums": "unicorn-cloak-{v}-SHA256SUMS"
+  },
+  "aliases": {
+    "linux-appimage": "unicorn-cloak-latest-linux-x86_64.AppImage",
+    "windows-exe": "unicorn-cloak-latest-windows-x64.exe"
+  },
+  "platforms": {
+    "linux-appimage": {
+      "os": "linux",
+      "kind": "portable",
+      "label": "AppImage"
+    },
+    "windows-exe": {
+      "os": "windows",
+      "kind": "installer",
+      "label": "Windows (.exe)"
+    }
+  }
+}

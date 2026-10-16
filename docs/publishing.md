@@ -125,6 +125,7 @@ one there.
 | --- | --- | --- |
 | Rusty Wave | [`rusty-wave.json`](../scripts/products/rusty-wave.json) | AppImage (with zsync), Flatpak, deb, RPM, tarball, Windows, macOS, web app |
 | U-Stu Video Editor | [`u-studio-video-editor.json`](../scripts/products/u-studio-video-editor.json) | Flatpak with two add-ons (titles, effects), and the GPL corresponding source, required with any Flatpak |
+| Unicorn Cloak | [`unicorn-cloak.json`](../scripts/products/unicorn-cloak.json) | AppImage, Windows (.exe) |
 
 **Every publisher of every product uses the same pinned commit.** Each
 publish rebuilds the catalog and the pages from the configs in its own pin,
