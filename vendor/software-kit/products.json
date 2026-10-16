@@ -76,7 +76,7 @@
   "name": "Unicorn Cloak",
   "tagline": "A mic-reactive avatar overlay for your stream.",
   "pitch": "A from-scratch replacement for PNGTuber-Plus: layered sprites that move with your voice, in a transparent window that OBS captures as a source, with a control panel for building the rig, tuning motion and audio, and going live.",
-  "icon": "",
+  "icon": "unicorn-cloak-icon",
   "accent": "cyan"
  }
 }

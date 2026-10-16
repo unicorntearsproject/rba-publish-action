@@ -19,6 +19,8 @@ Callers pin commit SHAs; each entry names what changed for them.
 
 ### Added
 
+- Page kit re-vendored at website-primary `d09e872` (manifest `943b44f`, 26 files):
+  Unicorn Cloak's icon.
 - A third product, Unicorn Cloak (`scripts/products/unicorn-cloak.json`):
   AppImage and Windows exe. Its release key is new (`4154395F…B68E`, subkey
   `77D4CF1C…F48C`, ed25519, no expiry), pinned in `keys/`, with a real
