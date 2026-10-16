@@ -1,3 +1,4 @@
+// kit v2: re-fingerprinted after a Content-Type fix at publish (2026-10-15).
 // Fun mode and Corporate mode (ADR-039). Loaded synchronously in <head>, before
 // the stylesheet, so html[data-mode] is set before the first paint (no flash).
 // First-party, no inline handlers; CSP script-src 'self'. Without JavaScript the

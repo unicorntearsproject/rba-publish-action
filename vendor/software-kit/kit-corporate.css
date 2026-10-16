@@ -34,3 +34,6 @@ html[data-mode="corporate"] .cmd { background: var(--bg-raised); border: 1px sol
 html[data-mode="corporate"] details, html[data-mode="corporate"] .version table { border-color: var(--border-default); }
 html[data-mode="corporate"] .sha, html[data-mode="corporate"] .fpr { color: var(--text-secondary); }
 html[data-mode="corporate"] footer p, html[data-mode="corporate"] footer a { color: var(--text-secondary); }
+html[data-mode="corporate"] .source-card { background: #ffffff; border: 1px solid var(--border-default); border-radius: 0; box-shadow: none; }
+html[data-mode="corporate"] .source-link { color: var(--accent-primary); }
+html[data-mode="corporate"] .source-link:hover { color: var(--accent-primary-hover); }

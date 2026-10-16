@@ -331,7 +331,8 @@ if (export FAKE_S3_DIR=$real PATH="$ROOT/tests/fake-aws:$PATH" PRODUCTS=$work/pr
   else nok "real kit: nav bar missing or wrong"; fi
   # The product's source link (catalog source_url) under the platforms.
   if grep -q 'href="https://github.com/unicorntearsproject/rusty-media-player"' "$real/index.html" \
-     && grep -q 'Source code: fully audited &amp; tested by AI\|Source code: fully audited & tested by AI' "$real/index.html"; then
+     && grep -q 'Source code' "$real/index.html" \
+     && grep -q 'Fully audited &amp; tested by AI' "$real/index.html"; then
     ok "real kit: each product links its GitHub source with the audited note"
   else nok "real kit: source link missing"; fi
   others=$(grep -rhoE 'href="https?://[^"]+"' "$real" --include=index.html | sort -u \

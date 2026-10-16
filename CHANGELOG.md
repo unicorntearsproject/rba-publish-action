@@ -7,6 +7,11 @@ Callers pin commit SHAs; each entry names what changed for them.
 
 ### Fixed
 
+- Page kit re-vendored at website-primary `3f71c8a` (manifest `67a7bfc`): the
+  "Source code" card with the GitHub logo (`render.py`, both stylesheets), and
+  `mode.js` with a comment added, giving it a new fingerprint so it uploads
+  with the JavaScript Content-Type; the earlier object can't be rewritten
+  (the bucket denies overwrites) and stays unreferenced.
 - Kit upload: `_kit/*.js` now gets `Content-Type: text/javascript` (the Corporate
   mode script was uploaded with none, which `nosniff` refuses to run), and an
   unknown extension now stops the upload instead of being swallowed in a

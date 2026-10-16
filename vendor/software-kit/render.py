@@ -184,16 +184,27 @@ def file_row(f, alias):
             f'</li>\n')
 
 
-SOURCE_NOTE = "Source code: fully audited & tested by AI"
+SOURCE_NOTE = "Fully audited & tested by AI"
 
 
-def source_link(url):
-    """The product's source link, same tab (the user's rule, 2026-10-15)."""
-    return f'<p class="source"><a href="{e(url)}">{e(SOURCE_NOTE)}</a></p>\n' if url else ""
+def github_mark():
+    """The footer's GitHub mark (Simple Icons, CC0), reused so both stay one drawing."""
+    return re.search(r'<svg class="icon"[^>]*><path d="M12 \.297[^"]*"/></svg>', SOCIAL).group(0)
+
+
+def source_card(url):
+    """The "Source code" card (the user's rule, 2026-10-15; kit v3): the GitHub mark, the
+    repo name as the link (from source_url), and the note. Same tab."""
+    if not url:
+        return ""
+    repo = SOURCE_URL.fullmatch(url).group(1)
+    return ('<div class="source-card">\n<h4>Source code</h4>\n'
+            f'<a class="source-link" href="{e(url)}">{github_mark()}<span class="repo">{e(repo)}</span></a>\n'
+            f'<p class="source-note">{e(SOURCE_NOTE)}</p>\n</div>\n')
 
 
 def platforms(v, latest, source_url=None):
-    """The version's files grouped by OS, in OS_GROUPS order. The source link sits
+    """The version's files grouped by OS, in OS_GROUPS order. The source card sits
     under the macOS column, or under the last column when there is no macOS."""
     groups = [(os_id, title, [f for f in v["files"] if f.get("os") == os_id]) for os_id, title in OS_GROUPS]
     groups = [g for g in groups if g[2]]
@@ -208,7 +219,7 @@ def platforms(v, latest, source_url=None):
             out += file_row(f, alias)
         out += "</ul>\n"
         if os_id == home:
-            out += source_link(source_url)
+            out += source_card(source_url)
         out += "</div>\n"
     return out + "</div>\n"
 
