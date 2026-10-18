@@ -17,6 +17,11 @@ Callers pin commit SHAs; each entry names what changed for them.
   unknown extension now stops the upload instead of being swallowed in a
   command substitution. Tests added.
 
+### Changed
+
+- Page kit re-vendored at website-primary `84b0731` (manifest `88fdf2a`): the footer's
+  UTP credit becomes the GitHub org link (owner decision, 2026-10-18).
+
 ### Added
 
 - Page kit re-vendored at website-primary `d09e872` (manifest `943b44f`, 26 files):

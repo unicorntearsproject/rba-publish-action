@@ -298,8 +298,8 @@ def page(title, description, body, urls, canonical):
 {body}</main>
 <footer>
   <hr class="divider">
-{SOCIAL}  <p>© 2026 Unicorn Tears Project (UTP).</p>
-  <p>“Rusty Bucket”, “Rusty”, “Rusty Wave” and the logo are trademarks of UTP.</p>
+{SOCIAL}  <p>© 2026 <a href="https://github.com/orgs/Rusty-Bucket-AI-OS/">Rusty-Bucket-AI-OS</a>.</p>
+  <p>“Rusty Bucket”, “Rusty”, “Rusty Wave” and the logo are trademarks of <a href="https://github.com/orgs/Rusty-Bucket-AI-OS/">Rusty-Bucket-AI-OS</a>.</p>
 </footer>
 </body>
 </html>
