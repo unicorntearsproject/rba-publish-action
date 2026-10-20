@@ -5,6 +5,11 @@ Callers pin commit SHAs; each entry names what changed for them.
 
 ## [Unreleased]
 
+### Changed
+
+- Page kit re-vendored at website-primary `018fabb` (manifest `aa9208b`): the pages carry
+  `<meta name="darkreader-lock">`.
+
 ### Fixed
 
 - Page kit re-vendored at website-primary `3f71c8a` (manifest `67a7bfc`): the

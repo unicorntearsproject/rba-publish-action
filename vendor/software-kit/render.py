@@ -286,6 +286,7 @@ def page(title, description, body, urls, canonical):
 <title>{e(title)}</title>
 <meta name="description" content="{e(description)}">
 <link rel="canonical" href="{e(canonical)}">
+<meta name="darkreader-lock">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#00111a">
 <link rel="icon" href="{urls['emblem-80.webp']}" type="image/webp">
