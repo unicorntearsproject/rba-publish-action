@@ -7,6 +7,8 @@ Callers pin commit SHAs; each entry names what changed for them.
 
 ### Changed
 
+- Page kit re-vendored at website-primary `2928edf` (manifest `3ffc771`): "Videos" joins the
+  nav after Support Us (ten items); the offline nav test follows.
 - Page kit re-vendored at website-primary `302ab25` (manifest `5619f24`): `rusty.css`
   regenerated with the OS's new theme token `--dur-focus-settle`.
 - Page kit re-vendored at website-primary `018fabb` (manifest `aa9208b`): the pages carry

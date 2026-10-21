@@ -322,12 +322,12 @@ if (export FAKE_S3_DIR=$real PATH="$ROOT/tests/fake-aws:$PATH" PRODUCTS=$work/pr
   # The nav bar (RBA Web Site's nav.html): Home, then the site's sections in
   # alphabetical order, every one a same-tab link, Software marked current.
   nav_ok=1
-  want="https://rustybucket.ai/ https://rustybucket.ai/art/ https://rustybucket.ai/bucketfs/ https://rustybucket.ai/hardware/ https://rustybucket.ai/library/ https://rustybucket.ai/press/ https://rustybucket.ai/process/ https://software.rustybucket.ai/ https://rustybucket.ai/support/"
+  want="https://rustybucket.ai/ https://rustybucket.ai/art/ https://rustybucket.ai/bucketfs/ https://rustybucket.ai/hardware/ https://rustybucket.ai/library/ https://rustybucket.ai/press/ https://rustybucket.ai/process/ https://software.rustybucket.ai/ https://rustybucket.ai/support/ https://rustybucket.ai/videos/"
   got=$(grep -oE 'class="nav-link" href="[^"]+"' "$real/index.html" | sed -E 's/.*href="([^"]+)"/\1/' | tr '\n' ' ' | sed 's/ $//')
   [[ $got == "$want" ]] || nav_ok=0
   grep -q 'href="https://software.rustybucket.ai/" aria-current="page"' "$real/rusty-wave/index.html" || nav_ok=0
   grep -q 'target=' "$real/index.html" && nav_ok=0
-  if ((nav_ok)); then ok "real kit: the nav bar's nine same-tab links in order, Software current"
+  if ((nav_ok)); then ok "real kit: the nav bar's ten same-tab links in order, Software current"
   else nok "real kit: nav bar missing or wrong"; fi
   # The product's source link (catalog source_url) under the platforms.
   if grep -q 'href="https://github.com/unicorntearsproject/rusty-media-player"' "$real/index.html" \
