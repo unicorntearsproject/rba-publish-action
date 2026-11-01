@@ -296,7 +296,7 @@ if (export FAKE_S3_DIR=$real PATH="$ROOT/tests/fake-aws:$PATH" PRODUCTS=$work/pr
   css=$(cd "$real" && find _kit -name 'kit.*.css')
   if [[ -n $css && -f $real/index.html && -f $real/rusty-wave/index.html ]] \
      && grep -q "href=\"/$css\"" "$real/rusty-wave/1.0.0-rc1/index.html" \
-     && ! grep -lqP -e '<style' -e '<script(?![^>]*\ssrc=)' -e ' style=' "$real/index.html" "$real/rusty-wave/index.html"; then
+     && ! grep -lqP '<style|<script(?![^>]*\ssrc=)| style=' "$real/index.html" "$real/rusty-wave/index.html"; then
     ok "real kit: pages, fingerprinted assets, folder pages on its CSS, no inline style or script"
   else nok "real kit render"; (cd "$real" && find . -type f | sort | sed -n "1,30p"); fi
   # Every uploaded kit file has a Content-Type (nosniff: a script without
@@ -336,9 +336,9 @@ if (export FAKE_S3_DIR=$real PATH="$ROOT/tests/fake-aws:$PATH" PRODUCTS=$work/pr
     ok "real kit: each product links its GitHub source with the audited note"
   else nok "real kit: source link missing"; fi
   others=$(grep -rhoE 'href="https?://[^"]+"' "$real" --include=index.html | sort -u \
-    | grep -vE '^href="https://(software\.rustybucket\.ai|rustybucket\.ai|wave\.rustybucket\.ai)(/[^"]*)?"$' \
+    | grep -vE '^href="https://(software\.rustybucket\.ai|rustybucket\.ai|wave\.rustybucket\.ai|crispdesktop\.ai|crispcloud\.ai)(/[^"]*)?"$' \
     | grep -vxE 'href="https://x\.com/rustybucketai"|href="https://github\.com/orgs/Rusty-Bucket-AI-OS/"|href="https://github\.com/unicorntearsproject/[A-Za-z0-9._-]+"' || true)
-  if [[ -z $others ]]; then ok "real kit: no external links beyond our sites, X, GitHub and product sources"
+  if [[ -z $others ]]; then ok "real kit: no external links beyond our sites (Crisp included), X, GitHub and product sources"
   else nok "real kit: unexpected external links"; echo "$others"; fi
 else nok "real kit render_site failed"; cat "$work/out"; fi
 

@@ -7,7 +7,7 @@ page kit, vendored into rba-infra at a pinned commit).
 Writes OUT_DIR/index.html (every product), OUT_DIR/<product>/index.html (one
 product each) and OUT_DIR/_kit/ (CSS, fonts, icons, licences, all fingerprinted
 as name.<hash>.ext, so a publish only ever adds new keys). Python 3 stdlib only;
-no inline JavaScript (one first-party script, mode.js, for Corporate mode, ADR-039);
+no inline JavaScript (one first-party script, site.js: the site family by hostname, ADR-042);
 every asset is same-origin. The page needs:
 
   Content-Security-Policy: default-src 'none'; script-src 'self'; img-src 'self'; style-src 'self';
@@ -144,10 +144,10 @@ def write_assets(out):
             css += fh.read()
     with open(os.path.join(KIT, "kit.css"), encoding="utf-8") as fh:
         css += fh.read()
-    # Corporate mode (ADR-039): the shared theme, then the kit's own overrides
-    with open(os.path.join(ASSETS, "corporate.css"), encoding="utf-8") as fh:
+    # The Crisp theme (ADR-042), on the Crisp software hosts: the shared tokens, then the kit's own rules
+    with open(os.path.join(ASSETS, "crisp.css"), encoding="utf-8") as fh:
         css += fh.read()
-    with open(os.path.join(KIT, "kit-corporate.css"), encoding="utf-8") as fh:
+    with open(os.path.join(KIT, "kit-crisp.css"), encoding="utf-8") as fh:
         css += fh.read()
     css = re.sub(r"url\(/_kit/([\w.-]+)\)", lambda m: f"url({urls[m.group(1)]})", css)
     put("kit.css", css.encode("utf-8"))
@@ -290,7 +290,7 @@ def page(title, description, body, urls, canonical):
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#00111a">
 <link rel="icon" href="{urls['emblem-80.webp']}" type="image/webp">
-{fonts}<script src="{urls['mode.js']}"></script>
+{fonts}<script src="{urls['site.js']}"></script>
 <link rel="stylesheet" href="{urls['kit.css']}">
 </head>
 <body>
@@ -300,7 +300,8 @@ def page(title, description, body, urls, canonical):
 <footer>
   <hr class="divider">
 {SOCIAL}  <p>© 2026 <a href="https://github.com/orgs/Rusty-Bucket-AI-OS/">Rusty-Bucket-AI-OS</a>.</p>
-  <p>“Rusty Bucket”, “Rusty”, “Rusty Wave” and the logo are trademarks of <a href="https://github.com/orgs/Rusty-Bucket-AI-OS/">Rusty-Bucket-AI-OS</a>.</p>
+  <p class="rb-only">“Rusty Bucket”, “Rusty”, “Rusty Wave” and the logo are trademarks of <a href="https://github.com/orgs/Rusty-Bucket-AI-OS/">Rusty-Bucket-AI-OS</a>.</p>
+  <p class="crisp-only">Built on the same core as <a href="https://rustybucket.ai/">Rusty Bucket AI OS</a>.</p>
 </footer>
 </body>
 </html>

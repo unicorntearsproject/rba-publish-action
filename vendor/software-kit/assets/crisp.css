@@ -1,0 +1,44 @@
+@font-face { font-family: 'Public Sans'; src: url(/_kit/public-sans.woff2) format('woff2'); font-weight: 100 900; font-style: normal; font-display: swap; }
+
+html.crisp {
+  color-scheme: dark;
+
+  /* Surfaces and text: ice on navy (navy #020B23, cyan #24C0EA, ice #D2F1FA) */
+  --abyss: #020b23; --deep: #061433; --panel: #0a1a3d; --sea-glow: #0a1a3d;
+  --bg-page: #020b23; --bg-surface: #061433; --bg-raised: #0a1a3d; --bg-overlay: #061433;
+  --bg-inset: #0a1a3d; --bg-terminal: #061433; --bg-hover: #0e2250;
+  --cream: #d2f1fa; --warm-cream: #c4e3ee; --sea-glass: #a3c2d2; --weathered: #8eabbd;
+  --text-strong: #eefaff; --text-body: #d2f1fa; --text-secondary: #a3c2d2; --text-muted: #8eabbd;
+  --text-disabled: #5f7a8c; --text-on-accent: #020b23; --terminal-text: #d2f1fa;
+
+  /* One cyan accent; the Rusty colours collapse into it */
+  --accent-primary: #24c0ea; --accent-primary-hover: #6ad6f3; --accent-primary-soft: #0d2a4d;
+  --accent-secondary: #24c0ea; --accent-secondary-soft: #0d2a4d; --accent-tertiary: #24c0ea;
+  --cyan: #24c0ea; --brass: #24c0ea; --coral: #24c0ea; --focus-ring: #24c0ea;
+  --frame-lit: #3a5a80; --frame: #1e3557;
+
+  /* Navy rules */
+  --border-subtle: #12264a; --border-default: #23406b; --border-control: #4e6d93;
+  --border-strong: #d2f1fa; --border-active: #24c0ea; --border-warm: #23406b;
+
+  /* Status colours light enough for navy (AA) */
+  --success: #5bd68a; --warning: #f2c14e; --error: #ff8a8a; --info: #24c0ea;
+
+  /* No glows, gradients or heavy shadows */
+  --glow-color-cyan: transparent; --glow-color-brass: transparent; --glow-color-coral: transparent;
+  --glow-cyan: none; --glow-brass: none; --glow-coral: none; --glow-strip: none; --glow-pulse-peak: none;
+  --glow-blur-cyan: 0; --glow-blur-brass: 0; --glow-blur-coral: 0; --glow-blur-pulse: 0;
+  --shadow-plate-sm: 0 1px 2px rgba(0, 0, 0, 0.35); --shadow-plate-md: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-plate-lg: 0 2px 6px rgba(0, 0, 0, 0.45); --shadow-bevel: none;
+  --gradient-wallpaper: none; --gradient-wallpaper-daylight: none; --gradient-heated-metal: none;
+  --gradient-neon-strip: linear-gradient(90deg, #24c0ea, #24c0ea); --gradient-plate: none;
+  --gradient-brass-text: linear-gradient(90deg, #24c0ea, #24c0ea);
+
+  /* Square corners, no chamfers */
+  --radius-xs: 0; --radius-sm: 0; --radius-md: 0; --radius-lg: 0;
+  --chamfer-sm: 0px; --chamfer-md: 0px; --chamfer-lg: 0px;
+
+  --font-display: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-body: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+

@@ -28,6 +28,7 @@
   --text-disabled: #4a6764;
   --text-on-accent: #00111a;
   --terminal-text: #f4ecd8;
+  --prompt-crab: #ff0000;
   --accent-primary: #1ee7f8;
   --accent-primary-hover: #7ff2fb;
   --accent-primary-soft: #0b3540;
@@ -108,6 +109,7 @@
   --dur-helper-timeout: 30000ms;
   --dur-notice-stay: 5000ms;
   --dur-focus-settle: 120ms;
+  --dur-tab-hover: 300ms;
   --dur-keep-settings: 15000ms;
   --ease-out-snap: cubic-bezier(0.2, 0.9, 0.1, 1);
   --ease-in-out-smooth: cubic-bezier(0.65, 0, 0.35, 1);

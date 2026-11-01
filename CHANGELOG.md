@@ -7,6 +7,10 @@ Callers pin commit SHAs; each entry names what changed for them.
 
 ### Changed
 
+- Page kit re-vendored at website-primary `652d9ad` (manifest `1c2fc64`): the site switch
+  (`site.js`) and the Crisp theme and nav by hostname (`crisp.css`, `kit-crisp.css`) replace
+  the Corporate mode (`mode.js`, `corporate.css`, `kit-corporate.css`). The offline
+  external-link check allows crispdesktop.ai and crispcloud.ai.
 - Page kit re-vendored at website-primary `8d48f17` (manifest `de5a803`): the theme's new token
   `--dur-keep-settings`.
 - Page kit re-vendored at website-primary `2928edf` (manifest `3ffc771`): "Videos" joins the
@@ -18,6 +22,9 @@ Callers pin commit SHAs; each entry names what changed for them.
 
 ### Fixed
 
+- The offline test's no-inline-style-or-script check passed every page: GNU grep
+  rejects `-P` with several `-e` patterns, and `! grep` read the error as "no match".
+  It now uses one alternation pattern.
 - Page kit re-vendored at website-primary `3f71c8a` (manifest `67a7bfc`): the
   "Source code" card with the GitHub logo (`render.py`, both stylesheets), and
   `mode.js` with a comment added, giving it a new fingerprint so it uploads

@@ -1,0 +1,48 @@
+
+/* The Crisp theme on software.crispdesktop.ai and software.crispcloud.ai (ADR-042): js/site.js
+   sets html.crisp by hostname; the shared tokens (assets/crisp.css) remap the colours; these
+   rules flatten the kit's own plates, buttons and code. */
+.crisp-only { display: none; }
+html.crisp .crisp-only { display: block; }
+html.crisp .nav-brand img { display: none; }
+.site-nav .nav-inner { max-width: 78rem; }
+.site-switch { display: inline-flex; flex: none; margin-left: auto; overflow: hidden; border: 1px solid var(--border-control); border-radius: 999px; white-space: nowrap; }
+.site-switch a { padding: 6px 12px; color: var(--text-secondary); font-size: 0.875rem; font-weight: 700; text-decoration: none; }
+.site-switch a + a { border-left: 1px solid var(--border-control); }
+.site-switch a:hover { background: var(--bg-hover); color: var(--text-strong); }
+html.crisp .site-switch { border-radius: 0; }
+html.crisp body { background: var(--bg-surface); color: var(--text-body); font-size: 1.0625rem; }
+html.crisp body::before { display: none; }
+html.crisp .site-nav { background: var(--bg-surface); -webkit-backdrop-filter: none; backdrop-filter: none; border-bottom: 1px solid var(--border-default); }
+html.crisp .nav-brand, html.crisp .nav-link { color: var(--text-strong); }
+html.crisp .nav-link:hover { background: var(--bg-hover); }
+html.crisp .nav-link[aria-current="page"] { box-shadow: inset 0 -3px 0 var(--accent-primary); }
+html.crisp .nav-links { -webkit-mask-image: none; mask-image: none; }
+html.crisp *, html.crisp *::before, html.crisp *::after { animation: none !important; transition: none !important; }
+html.crisp h1, html.crisp h2, html.crisp h3, html.crisp h4 { font-family: var(--font-display); letter-spacing: 0; color: var(--text-strong); }
+html.crisp a { color: var(--accent-primary); }
+html.crisp a:hover { color: var(--accent-primary-hover); }
+html.crisp .page-title::after, html.crisp .divider { box-shadow: none; background: var(--accent-primary); }
+
+/* Every product accent becomes the one navy */
+html.crisp .accent-violet, html.crisp .accent-magenta, html.crisp .accent-cyan,
+html.crisp .accent-rust, html.crisp .accent-lime, html.crisp .accent-purple {
+  --accent: var(--accent-primary); --accent-text: var(--accent-primary); --accent-glow: none;
+}
+html.crisp .product { background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: 0; box-shadow: none; }
+html.crisp .product::before, html.crisp .product::after { display: none; }
+html.crisp .product-icon { filter: none; }
+html.crisp .product-icon-blank { background: var(--bg-raised); box-shadow: inset 0 0 0 1px var(--border-default); border-radius: 0; }
+html.crisp .product-name, html.crisp .product-name a { color: var(--text-strong); text-shadow: none; }
+html.crisp .badge { background: var(--bg-surface); color: var(--text-strong); border: 1px solid var(--border-control); box-shadow: none; }
+html.crisp .platform h4::after { background: var(--border-default); }
+html.crisp .dl { background: var(--bg-raised); border: 1px solid var(--border-default); border-radius: 0; box-shadow: none; color: var(--text-strong); }
+html.crisp .dl:hover { background: var(--accent-primary-soft); border-color: var(--accent-primary); box-shadow: none; transform: none; }
+html.crisp .dl-label { color: var(--accent-primary); }
+html.crisp .cmd { background: var(--bg-raised); border: 1px solid var(--border-default); border-radius: 0; box-shadow: none; color: var(--text-strong); }
+html.crisp details, html.crisp .version table { border-color: var(--border-default); }
+html.crisp .sha, html.crisp .fpr { color: var(--text-secondary); }
+html.crisp footer p, html.crisp footer a { color: var(--text-secondary); }
+html.crisp .source-card { background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: 0; box-shadow: none; }
+html.crisp .source-link { color: var(--accent-primary); }
+html.crisp .source-link:hover { color: var(--accent-primary-hover); }
