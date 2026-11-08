@@ -7,6 +7,8 @@ Callers pin commit SHAs; each entry names what changed for them.
 
 ### Changed
 
+- Page kit re-vendored at website-primary `8b82388` (manifest `3c48044`): "Welcome tour"
+  joins Resources (twelve links, A-Z). The offline nav test follows.
 - Page kit re-vendored at website-primary `dda393b` (manifest `2cb72cb`): Crisp Desktop
   light/dark, the Crisp Cloud themes, the grouped menus (Product, Resources, Company; A-Z)
   with the Manual (`nav.js`, `theme.js` added). The offline nav test follows.

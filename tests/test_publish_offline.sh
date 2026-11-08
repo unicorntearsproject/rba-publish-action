@@ -320,16 +320,16 @@ if (export FAKE_S3_DIR=$real PATH="$ROOT/tests/fake-aws:$PATH" PRODUCTS=$work/pr
     ok "real kit: the X and GitHub links are in the footer"
   else nok "real kit: social links missing"; fi
   # The nav bar (RBA Web Site's nav.html): Home, the Product and Resources
-  # menus (each A-Z; Resources with the Manual), Software (marked current), the
+  # menus (each A-Z; Resources with the Manual and the Welcome tour), Software (marked current), the
   # Company menu; every one a same-tab link, each menu a button with aria-expanded and its own list.
   nav_ok=1
-  want="https://rustybucket.ai/ https://rustybucket.ai/bucketfs/ https://rustybucket.ai/hardware/ https://rustybucket.ai/process/ https://rustybucket.ai/art/ https://rustybucket.ai/library/ https://rustybucket.ai/manual/ https://rustybucket.ai/videos/ https://software.rustybucket.ai/ https://rustybucket.ai/press/ https://rustybucket.ai/support/"
+  want="https://rustybucket.ai/ https://rustybucket.ai/bucketfs/ https://rustybucket.ai/hardware/ https://rustybucket.ai/process/ https://rustybucket.ai/art/ https://rustybucket.ai/library/ https://rustybucket.ai/manual/ https://rustybucket.ai/videos/ https://rustybucket.ai/manual/tour https://software.rustybucket.ai/ https://rustybucket.ai/press/ https://rustybucket.ai/support/"
   got=$(grep -oE 'class="nav-(sub-)?link" href="[^"]+"' "$real/index.html" | sed -E 's/.*href="([^"]+)"/\1/' | tr '\n' ' ' | sed 's/ $//')
   [[ $got == "$want" ]] || nav_ok=0
   [[ $(grep -oE '<button class="nav-group" type="button" aria-expanded="false" aria-controls="menu-(product|resources|company)">' "$real/index.html" | wc -l) == 3 ]] || nav_ok=0
   grep -q 'href="https://software.rustybucket.ai/" aria-current="page"' "$real/rusty-wave/index.html" || nav_ok=0
   grep -q 'target=' "$real/index.html" && nav_ok=0
-  if ((nav_ok)); then ok "real kit: the grouped nav (three A-Z menus), eleven same-tab links in order, Software current"
+  if ((nav_ok)); then ok "real kit: the grouped nav (three A-Z menus), twelve same-tab links in order, Software current"
   else nok "real kit: nav bar missing or wrong"; echo "$got"; fi
   # The product's source link (catalog source_url) under the platforms.
   if grep -q 'href="https://github.com/unicorntearsproject/rusty-media-player"' "$real/index.html" \
