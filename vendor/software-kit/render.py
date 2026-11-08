@@ -7,7 +7,8 @@ page kit, vendored into rba-infra at a pinned commit).
 Writes OUT_DIR/index.html (every product), OUT_DIR/<product>/index.html (one
 product each) and OUT_DIR/_kit/ (CSS, fonts, icons, licences, all fingerprinted
 as name.<hash>.ext, so a publish only ever adds new keys). Python 3 stdlib only;
-no inline JavaScript (one first-party script, site.js: the site family by hostname, ADR-042);
+no inline JavaScript (two first-party scripts: site.js, the site family by hostname, ADR-042, and
+theme.js, Crisp Desktop's light and dark themes, ADR-043);
 every asset is same-origin. The page needs:
 
   Content-Security-Policy: default-src 'none'; script-src 'self'; img-src 'self'; style-src 'self';
@@ -291,6 +292,8 @@ def page(title, description, body, urls, canonical):
 <meta name="theme-color" content="#00111a">
 <link rel="icon" href="{urls['emblem-80.webp']}" type="image/webp">
 {fonts}<script src="{urls['site.js']}"></script>
+<script src="{urls['theme.js']}"></script>
+<script src="{urls['nav.js']}" defer></script>
 <link rel="stylesheet" href="{urls['kit.css']}">
 </head>
 <body>

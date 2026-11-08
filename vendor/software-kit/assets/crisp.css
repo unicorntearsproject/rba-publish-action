@@ -42,3 +42,100 @@ html.crisp {
   --font-body: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
+/* Crisp Desktop's default (owner, 2026-11-04): the government-style black-on-white theme of the
+   old Corporate mode; the navy above is its dark option (html.theme-dark, the sun/moon toggle,
+   js/theme.js). Crisp Cloud stays navy only. */
+html.crisp.crisp-desktop:not(.theme-dark) {
+  color-scheme: light;
+
+  /* Surfaces and text: black on white */
+  --abyss: #ffffff; --deep: #f3f4f6; --panel: #f3f4f6; --sea-glow: #e7eaee;
+  --bg-page: #ffffff; --bg-surface: #ffffff; --bg-raised: #f3f4f6; --bg-overlay: #ffffff;
+  --bg-inset: #eceef1; --bg-terminal: #f3f4f6; --bg-hover: #eaedf1;
+  --cream: #0b0c0e; --warm-cream: #1b1b1b; --sea-glass: #3d4551; --weathered: #565c65;
+  --text-strong: #0b0c0e; --text-body: #1b1b1b; --text-secondary: #3d4551; --text-muted: #565c65;
+  --text-disabled: #71767a; --text-on-accent: #ffffff; --terminal-text: #1b1b1b;
+
+  /* One restrained navy accent; the Rusty colours collapse into it */
+  --accent-primary: #1a4480; --accent-primary-hover: #162e51; --accent-primary-soft: #e8eef6;
+  --accent-secondary: #1a4480; --accent-secondary-soft: #e8eef6; --accent-tertiary: #1a4480;
+  --cyan: #1a4480; --brass: #1a4480; --coral: #1a4480; --focus-ring: #1a4480;
+  --frame-lit: #71767a; --frame: #a9aeb1;
+
+  /* Grey rules */
+  --border-subtle: #dfe1e2; --border-default: #a9aeb1; --border-control: #565c65;
+  --border-strong: #1b1b1b; --border-active: #1a4480; --border-warm: #a9aeb1;
+
+  /* Status colours dark enough for white (AA) */
+  --success: #216e1f; --warning: #7a4b00; --error: #b50909; --info: #1a4480;
+
+  /* No glows, gradients or heavy shadows */
+  --glow-color-cyan: transparent; --glow-color-brass: transparent; --glow-color-coral: transparent;
+  --glow-cyan: none; --glow-brass: none; --glow-coral: none; --glow-strip: none; --glow-pulse-peak: none;
+  --glow-blur-cyan: 0; --glow-blur-brass: 0; --glow-blur-coral: 0; --glow-blur-pulse: 0;
+  --shadow-plate-sm: 0 1px 2px rgba(11, 12, 14, 0.12); --shadow-plate-md: 0 1px 3px rgba(11, 12, 14, 0.14);
+  --shadow-plate-lg: 0 2px 6px rgba(11, 12, 14, 0.16); --shadow-bevel: none;
+  --gradient-wallpaper: none; --gradient-wallpaper-daylight: none; --gradient-heated-metal: none;
+  --gradient-neon-strip: linear-gradient(90deg, #1a4480, #1a4480); --gradient-plate: none;
+  --gradient-brass-text: linear-gradient(90deg, #1a4480, #1a4480);
+
+  /* Square corners, no chamfers */
+  --radius-xs: 0; --radius-sm: 0; --radius-md: 0; --radius-lg: 0;
+  --chamfer-sm: 0px; --chamfer-md: 0px; --chamfer-lg: 0px;
+
+  /* Government-style type */
+  --font-display: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-body: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Crisp Cloud's light option (owner, 2026-11-04): the same black on white, with Phalanx's orange
+   as the accent. Orange text fails on white, so text and rules use a dark orange (AA) and the
+   bright orange fills buttons (--accent-fill) with dark text. Dark (navy) stays the default. */
+html.crisp.crisp-cloud.theme-light {
+  color-scheme: light;
+
+  /* Surfaces and text: black on white */
+  --abyss: #ffffff; --deep: #f3f4f6; --panel: #f3f4f6; --sea-glow: #e7eaee;
+  --bg-page: #ffffff; --bg-surface: #ffffff; --bg-raised: #f3f4f6; --bg-overlay: #ffffff;
+  --bg-inset: #eceef1; --bg-terminal: #f3f4f6; --bg-hover: #eaedf1;
+  --cream: #0b0c0e; --warm-cream: #1b1b1b; --sea-glass: #3d4551; --weathered: #565c65;
+  --text-strong: #0b0c0e; --text-body: #1b1b1b; --text-secondary: #3d4551; --text-muted: #565c65;
+  --text-disabled: #71767a; --text-on-accent: #ffffff; --terminal-text: #1b1b1b;
+
+  /* One restrained navy accent; the Rusty colours collapse into it */
+  --accent-primary: #1a4480; --accent-primary-hover: #162e51; --accent-primary-soft: #e8eef6;
+  --accent-secondary: #1a4480; --accent-secondary-soft: #e8eef6; --accent-tertiary: #1a4480;
+  --cyan: #1a4480; --brass: #1a4480; --coral: #1a4480; --focus-ring: #1a4480;
+  --frame-lit: #71767a; --frame: #a9aeb1;
+
+  /* Grey rules */
+  --border-subtle: #dfe1e2; --border-default: #a9aeb1; --border-control: #565c65;
+  --border-strong: #1b1b1b; --border-active: #1a4480; --border-warm: #a9aeb1;
+
+  /* Status colours dark enough for white (AA) */
+  --success: #216e1f; --warning: #7a4b00; --error: #b50909; --info: #1a4480;
+
+  /* No glows, gradients or heavy shadows */
+  --glow-color-cyan: transparent; --glow-color-brass: transparent; --glow-color-coral: transparent;
+  --glow-cyan: none; --glow-brass: none; --glow-coral: none; --glow-strip: none; --glow-pulse-peak: none;
+  --glow-blur-cyan: 0; --glow-blur-brass: 0; --glow-blur-coral: 0; --glow-blur-pulse: 0;
+  --shadow-plate-sm: 0 1px 2px rgba(11, 12, 14, 0.12); --shadow-plate-md: 0 1px 3px rgba(11, 12, 14, 0.14);
+  --shadow-plate-lg: 0 2px 6px rgba(11, 12, 14, 0.16); --shadow-bevel: none;
+  --gradient-wallpaper: none; --gradient-wallpaper-daylight: none; --gradient-heated-metal: none;
+  --gradient-neon-strip: linear-gradient(90deg, #1a4480, #1a4480); --gradient-plate: none;
+  --gradient-brass-text: linear-gradient(90deg, #1a4480, #1a4480);
+
+  /* Square corners, no chamfers */
+  --radius-xs: 0; --radius-sm: 0; --radius-md: 0; --radius-lg: 0;
+  --chamfer-sm: 0px; --chamfer-md: 0px; --chamfer-lg: 0px;
+
+  /* Government-style type */
+  --font-display: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-body: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --accent-primary: #a34f00; --accent-primary-hover: #7a3b00; --accent-primary-soft: #fff1e0;
+  --accent-secondary: #a34f00; --accent-secondary-soft: #fff1e0; --accent-tertiary: #a34f00;
+  --cyan: #a34f00; --brass: #a34f00; --coral: #a34f00; --focus-ring: #a34f00; --border-active: #a34f00; --info: #a34f00;
+  --gradient-neon-strip: linear-gradient(90deg, #fc9418, #fc9418); --gradient-brass-text: linear-gradient(90deg, #a34f00, #a34f00);
+  --accent-fill: #fc9418; --accent-fill-hover: #e8850c; --text-on-accent: #0b0c0e;
+}
+

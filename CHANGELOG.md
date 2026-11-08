@@ -7,6 +7,9 @@ Callers pin commit SHAs; each entry names what changed for them.
 
 ### Changed
 
+- Page kit re-vendored at website-primary `dda393b` (manifest `2cb72cb`): Crisp Desktop
+  light/dark, the Crisp Cloud themes, the grouped menus (Product, Resources, Company; A-Z)
+  with the Manual (`nav.js`, `theme.js` added). The offline nav test follows.
 - Page kit re-vendored at website-primary `652d9ad` (manifest `1c2fc64`): the site switch
   (`site.js`) and the Crisp theme and nav by hostname (`crisp.css`, `kit-crisp.css`) replace
   the Corporate mode (`mode.js`, `corporate.css`, `kit-corporate.css`). The offline

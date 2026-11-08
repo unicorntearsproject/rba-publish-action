@@ -15,9 +15,9 @@
   var software = host.indexOf("software.") === 0;
   // The pages each site has; /hardware/ and /platforms/ are the same page in two editions
   var PAGES = {
-    rustybucket: ["/", "/art/", "/bucketfs/", "/hardware/", "/jason/", "/library/", "/press/", "/process/", "/support/", "/videos/"],
+    rustybucket: ["/", "/art/", "/bucketfs/", "/hardware/", "/jason/", "/library/", "/manual/", "/press/", "/process/", "/support/", "/videos/"],
     crispdesktop: ["/", "/art/", "/bucketfs/", "/hardware/", "/jason/", "/library/", "/press/", "/process/", "/support/"],
-    crispcloud: ["/", "/bucketfs/", "/jason/", "/library/", "/platforms/", "/press/", "/process/", "/support/"]
+    crispcloud: ["/", "/art/", "/bucketfs/", "/jason/", "/library/", "/platforms/", "/press/", "/process/", "/support/"]
   };
   function page(path, site) {
     if (PAGES[site].indexOf(path) >= 0) return path;

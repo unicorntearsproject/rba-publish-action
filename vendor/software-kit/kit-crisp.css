@@ -6,8 +6,9 @@
 html.crisp .crisp-only { display: block; }
 html.crisp .nav-brand img { display: none; }
 .site-nav .nav-inner { max-width: 78rem; }
-.site-switch { display: inline-flex; flex: none; margin-left: auto; overflow: hidden; border: 1px solid var(--border-control); border-radius: 999px; white-space: nowrap; }
-.site-switch a { padding: 6px 12px; color: var(--text-secondary); font-size: 0.875rem; font-weight: 700; text-decoration: none; }
+.site-switch { display: inline-flex; flex: none; align-items: stretch; height: 2.25rem; box-sizing: border-box; margin-left: auto; overflow: hidden;
+  border: 1px solid var(--border-control); border-radius: 999px; white-space: nowrap; align-self: center; }
+.site-switch a { display: inline-flex; align-items: center; padding: 0 12px; color: var(--text-secondary); font-size: 0.875rem; font-weight: 700; line-height: 1; text-decoration: none; }
 .site-switch a + a { border-left: 1px solid var(--border-control); }
 .site-switch a:hover { background: var(--bg-hover); color: var(--text-strong); }
 html.crisp .site-switch { border-radius: 0; }
@@ -46,3 +47,66 @@ html.crisp footer p, html.crisp footer a { color: var(--text-secondary); }
 html.crisp .source-card { background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: 0; box-shadow: none; }
 html.crisp .source-link { color: var(--accent-primary); }
 html.crisp .source-link:hover { color: var(--accent-primary-hover); }
+
+/* Crisp Desktop's sun/moon toggle (ADR-043; js/theme.js shows it on software.crispdesktop.ai) */
+.theme-toggle { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 2.25rem; height: 2.25rem; box-sizing: border-box; align-self: center;
+  padding: 0; border: 1px solid var(--border-control); background: transparent; color: var(--text-body); cursor: pointer; }
+.theme-toggle[hidden] { display: none; }
+.theme-toggle svg { width: 1.1rem; height: 1.1rem; }
+.theme-toggle .icon-sun { display: none; }
+html.theme-dark .theme-toggle .icon-sun { display: block; }
+html.theme-dark .theme-toggle .icon-moon { display: none; }
+html.crisp-desktop:not(.theme-dark) body { background: var(--bg-page); }
+
+/* Phones: the toggle and the switch stay one height (after their base rules) */
+@media (max-width: 40rem) { .site-switch { height: 2rem; } .site-switch a { padding: 0 9px; font-size: 0.75rem; } .theme-toggle { width: 2rem; height: 2rem; } }
+
+/* The menu and the control row, as on the sites (src/css/site.css; ADR-045) */
+/* ---- The menu's drop-downs (owner, 2026-11-04): related pages under one entry. They open on
+   hover and keyboard focus with CSS alone; js/nav.js adds tap, Esc and aria-expanded. */
+.nav-item { position: relative; }
+.nav-group {
+  display: flex; align-items: center; gap: 6px; padding: var(--space-2) 9px; border: 0; border-radius: var(--radius-sm);
+  background: transparent; color: var(--text-secondary); font: inherit; font-size: var(--text-base); font-weight: 700;
+  cursor: pointer; white-space: nowrap;
+}
+.nav-group::after {
+  content: ""; width: 0.4em; height: 0.4em; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  transform: translateY(-0.15em) rotate(45deg);
+}
+.nav-group:hover, .nav-item:focus-within > .nav-group { background: var(--bg-hover); color: var(--text-strong); }
+.nav-group:focus-visible { outline: var(--stroke-focus) solid var(--focus-ring); outline-offset: 2px; }
+.nav-item.has-current > .nav-group { color: var(--cream); box-shadow: inset 0 -2px 0 var(--brass); }
+.nav-sub {
+  position: absolute; top: 100%; left: 0; z-index: 60; display: none; flex-direction: column; min-width: 11rem;
+  margin: 0; padding: 6px; list-style: none; background: var(--bg-overlay, var(--bg-surface));
+  border: 1px solid var(--border-default); border-radius: var(--radius-sm); box-shadow: var(--shadow-plate-lg);
+}
+.nav-item:hover > .nav-sub, .nav-item:focus-within > .nav-sub, .nav-item.open > .nav-sub { display: flex; }
+.nav-item.shut > .nav-sub { display: none !important; }   /* Esc closes it even under the pointer */
+.nav-item:last-child .nav-sub { left: auto; right: 0; }
+.nav-sub-link {
+  display: block; padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm); color: var(--text-secondary);
+  font-weight: 700; text-decoration: none; white-space: nowrap;
+}
+.nav-sub-link:hover { background: var(--bg-hover); color: var(--text-strong); }
+.nav-sub-link[aria-current="page"] { color: var(--cream); box-shadow: inset 2px 0 0 var(--brass); }
+/* Phones: the menu wraps on its own row; no scrolling, so the drop-downs aren't clipped */
+@media (max-width: 40rem) {
+  .nav-inner { justify-content: space-between; padding-block: var(--space-2); }
+  .nav-links { flex-wrap: wrap; justify-content: flex-start; gap: 0; width: 100%; }
+  .nav-link, .nav-group { padding: var(--space-2) 5px; font-size: 0.8125rem; white-space: nowrap; }
+  .nav-group { gap: 4px; }
+  .nav-sub { min-width: 9.5rem; }
+  .nav-sub-link { font-size: var(--text-sm); }
+}
+/* The control row (owner, 2026-11-04): "choose your edition:", the switch, then the theme toggle
+   at the far right where a site has one; one height, one row */
+.nav-controls { display: flex; align-items: center; gap: var(--space-2); margin-left: auto; }
+.nav-controls .site-switch { margin-left: 0; }
+.edition-label { color: var(--text-muted); font-size: var(--text-sm); line-height: 2.25rem; white-space: nowrap; }
+@media (max-width: 40rem) {
+  .edition-label { font-size: 0.75rem; line-height: 2rem; }
+  .nav-controls { order: 2; margin-left: 0; width: 100%; justify-content: flex-end; }
+  .nav-inner .nav-links { order: 3; }
+}

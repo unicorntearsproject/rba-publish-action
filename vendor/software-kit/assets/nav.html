@@ -2,17 +2,12 @@
   <div class="nav-inner">
     <a class="nav-brand" href="https://rustybucket.ai/"><img src="{EMBLEM}" width="24" height="24" alt="" aria-hidden="true"> <span class="nav-brand-name">Rusty Bucket</span></a>
     <ul class="nav-links">
-      <li><a class="nav-link" href="https://rustybucket.ai/">Home</a></li>
-      <li><a class="nav-link" href="https://rustybucket.ai/art/">Art</a></li>
-      <li><a class="nav-link" href="https://rustybucket.ai/bucketfs/">BucketFS</a></li>
-      <li><a class="nav-link" href="https://rustybucket.ai/hardware/">Hardware</a></li>
-      <li><a class="nav-link" href="https://rustybucket.ai/library/">Library</a></li>
-      <li><a class="nav-link" href="https://rustybucket.ai/press/">Press</a></li>
-      <li><a class="nav-link" href="https://rustybucket.ai/process/">Process</a></li>
-      <li><a class="nav-link" href="https://software.rustybucket.ai/" aria-current="page">Software</a></li>
-      <li><a class="nav-link" href="https://rustybucket.ai/support/">Support Us</a></li>
-      <li><a class="nav-link" href="https://rustybucket.ai/videos/">Videos</a></li>
+      <li class="nav-item"><a class="nav-link" href="https://rustybucket.ai/">Home</a></li>
+      <li class="nav-item"><button class="nav-group" type="button" aria-expanded="false" aria-controls="menu-product">Product</button><ul class="nav-sub" id="menu-product"><li><a class="nav-sub-link" href="https://rustybucket.ai/bucketfs/">BucketFS</a></li><li><a class="nav-sub-link" href="https://rustybucket.ai/hardware/">Hardware</a></li><li><a class="nav-sub-link" href="https://rustybucket.ai/process/">Process</a></li></ul></li>
+      <li class="nav-item"><button class="nav-group" type="button" aria-expanded="false" aria-controls="menu-resources">Resources</button><ul class="nav-sub" id="menu-resources"><li><a class="nav-sub-link" href="https://rustybucket.ai/art/">Art</a></li><li><a class="nav-sub-link" href="https://rustybucket.ai/library/">Library</a></li><li><a class="nav-sub-link" href="https://rustybucket.ai/manual/">Manual</a></li><li><a class="nav-sub-link" href="https://rustybucket.ai/videos/">Videos</a></li></ul></li>
+      <li class="nav-item"><a class="nav-link" href="https://software.rustybucket.ai/" aria-current="page">Software</a></li>
+      <li class="nav-item"><button class="nav-group" type="button" aria-expanded="false" aria-controls="menu-company">Company</button><ul class="nav-sub" id="menu-company"><li><a class="nav-sub-link" href="https://rustybucket.ai/press/">Press</a></li><li><a class="nav-sub-link" href="https://rustybucket.ai/support/">Support Us</a></li></ul></li>
     </ul>
-    <div class="site-switch" role="group" aria-label="The other editions"><a href="https://crispdesktop.ai/">Corporate Desktop</a><a href="https://crispcloud.ai/">Cloud Image</a></div>
+    <div class="nav-controls"><span class="edition-label" id="edition-label">choose your edition:</span><div class="site-switch" role="group" aria-labelledby="edition-label"><a href="https://crispdesktop.ai/">Corporate Desktop</a><a href="https://crispcloud.ai/">Cloud Image</a></div><button class="theme-toggle" type="button" aria-pressed="false" aria-label="Dark theme" hidden><svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.7 14.6A8.6 8.6 0 0 1 9.4 3.3a8.6 8.6 0 1 0 11.3 11.3Z"/></svg><svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 1.5v2.5M12 20v2.5M1.5 12H4M20 12h2.5M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></svg></button></div>
   </div>
 </nav>
